@@ -16,7 +16,7 @@ import data.Message
 
 @Composable
 @Preview
-fun History(modifier: Modifier, list: SnapshotStateList<Message>) {
+fun History(modifier: Modifier, list: SnapshotStateList<Message>, self: Long) {
   Box(modifier = modifier) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -24,8 +24,8 @@ fun History(modifier: Modifier, list: SnapshotStateList<Message>) {
       state = listState
     ) {
       items(list) { message ->
-        MessageRow(message)
-        Spacer(modifier = Modifier.height(5.dp))
+        MessageRow(message, self = message.sender == self)
+        Spacer(modifier = Modifier.height(4.dp))
       }
     }
     VerticalScrollbar(

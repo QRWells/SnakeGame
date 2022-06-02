@@ -5,8 +5,8 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import components.History
 import data.Message
-import model.ChatViewModel
-import java.util.*
+import viewModel.ChatViewModel
+import java.time.LocalDateTime
 
 @Composable
 @Preview
@@ -56,8 +56,8 @@ fun ChatView(viewModel: ChatViewModel) {
       History(
         modifier = Modifier.fillMaxSize().padding(8.dp)
           .clip(shape = RoundedCornerShape(4.dp))
-          .background(Color.LightGray).weight(8f, true),
-        history,
+          .background(Color.White).weight(8f, true),
+        history, viewModel.self
       )
 
       Box(
@@ -65,18 +65,30 @@ fun ChatView(viewModel: ChatViewModel) {
           .clip(shape = RoundedCornerShape(4.dp))
           .weight(2f, true)
       ) {
-        TextField(
+        OutlinedTextField(
           text,
           onValueChange = { text = it },
           modifier = Modifier.align(Alignment.TopStart).fillMaxSize()
             .heightIn(32.dp, 64.dp).padding(8.dp)
         )
-        Button(onClick = {
-          if (text.isNotEmpty()) {
-            history.add(Message(UUID.randomUUID(), text))
-            text = ""
-          }
-        }, modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)) {
+        Button(
+          onClick = {
+            text.trim().let {
+              text = ""
+              if (it.isNotEmpty()) {
+                history.add(
+                  Message(
+                    viewModel.self,
+                    viewModel.with,
+                    it,
+                    LocalDateTime.now()
+                  )
+                )
+              }
+            }
+          },
+          modifier = Modifier.align(Alignment.BottomEnd).padding(12.dp)
+        ) {
           Text("Send")
         }
       }

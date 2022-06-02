@@ -7,7 +7,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,16 +19,14 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import components.TitleBar
-import model.ChatViewModel
-import view.AppsView
 import view.ChatView
+import viewModel.ChatViewModel
 
 @Composable
 @Preview
 fun App() {
   MaterialTheme {
     Row(Modifier.fillMaxSize()) {
-      var chat by rememberSaveable { mutableStateOf(true) }
       Box(
         modifier = Modifier.width(48.dp),
       ) {
@@ -39,24 +37,24 @@ fun App() {
           IconButton(onClick = {}) {
             Icon(Icons.Default.AccountCircle, "You")
           }
-          IconButton(onClick = { chat = true }) {
-            Icon(Icons.Default.List, "Friends")
-          }
         }
         Column(
           modifier = Modifier.fillMaxSize(),
           verticalArrangement = Arrangement.Bottom
         ) {
-          IconButton(onClick = { chat = false }) {
-            Icon(Icons.Default.Menu, "menu")
+          IconButton(onClick = {
+            wang.qrwells.snake.Main.launch(null)
+          }) {
+            Icon(Icons.Default.List, "menu")
+          }
+          IconButton(onClick = { }) {
+            Icon(Icons.Default.Settings, "settings")
           }
         }
       }
       Box {
         val chatViewModel = ChatViewModel()
         ChatView(chatViewModel)
-        if (!chat)
-          AppsView()
       }
     }
   }

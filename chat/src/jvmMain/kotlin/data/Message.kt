@@ -1,5 +1,10 @@
 package data
 
-import java.util.*
+import java.time.LocalDateTime
 
-data class Message(val sender: UUID, val message: String)
+data class Message(
+  val sender: Long,
+  val receiver: Long,
+  val message: String,
+  val time: LocalDateTime
+)
