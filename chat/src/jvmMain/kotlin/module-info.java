@@ -11,4 +11,9 @@ module SnakeClient.chat.jvmMain {
   requires io.vertx.core;
   requires SnakeClient.network.main;
   requires SnakeClient.snake.main;
+  requires kotlin.stdlib;
+  requires exposed.dao;
+  requires exposed.core;
+  requires kotlinx.coroutines.core.jvm;
+  requires ui.graphics.desktop;
 }
