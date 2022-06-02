@@ -1,6 +1,6 @@
 package wang.qrwells.net.tcp;
 
-import wang.qrwells.net.Message;
+import wang.qrwells.message.AbstractMessage;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ public class TCPMessageWriter {
     this.out = new DataOutputStream(out);
   }
 
-  public void write(Message message) throws IOException {
+  public void write(AbstractMessage message) throws IOException {
     var bytes = message.getBytes();
     out.writeInt(bytes.length);
     out.write(bytes);

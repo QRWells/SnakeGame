@@ -1,5 +1,7 @@
 package wang.qrwells.net;
 
-public interface MessageHandler {
-  void onReceive(Connection connection, Message message);
+import wang.qrwells.message.AbstractMessage;
+
+public interface MessageHandler<T extends AbstractMessage> {
+  void onReceive(Connection connection, T message);
 }

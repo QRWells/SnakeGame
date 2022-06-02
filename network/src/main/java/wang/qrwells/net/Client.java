@@ -3,12 +3,14 @@ package wang.qrwells.net;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import wang.qrwells.Task;
+import wang.qrwells.message.MessageUtil;
 import wang.qrwells.net.tcp.TCPConnection;
 import wang.qrwells.net.udp.UDPConnection;
 
 import java.io.EOFException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.ByteBuffer;
 import java.util.function.Consumer;
 
 public abstract class Client {
@@ -34,6 +36,7 @@ public abstract class Client {
               socket.getInetAddress() + ":" + socket.getPort());
 
     socket.setTcpNoDelay(true);
+    socket.setKeepAlive(true);
 
     Connection connection = new TCPConnection(socket, 1);
 
@@ -64,7 +67,8 @@ public abstract class Client {
         while (connection.isConnected()) {
           try {
             var message = reader.read();
-            connection.notifyMessageReceived(new Message(message));
+            connection.notifyMessageReceived(
+                MessageUtil.parseMessage(ByteBuffer.wrap(message)));
 
           } catch (EOFException e) {
             log.debug("Connection was correctly closed from remote endpoint.");
@@ -158,10 +162,10 @@ public abstract class Client {
   }
 
   public final Task<Void> connectTask() {
-    return Task.ofVoid("ClientConnect", this::connect);
+    return Task.ofVoid("ClientConnect", this::connect0);
   }
 
-  protected abstract void connect0() throws SocketException;
+  protected abstract void connect0();
 
   public abstract void disconnect();
 

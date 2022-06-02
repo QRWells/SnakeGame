@@ -3,6 +3,7 @@ package wang.qrwells.net;
 import javafx.application.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import wang.qrwells.message.AbstractMessage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,8 @@ public abstract class Connection {
   protected final List<MessageHandler> messageHandlers = new ArrayList<>();
   protected final List<MessageHandler> messageHandlersFX = new ArrayList<>();
   private final int connectionNum;
-  protected BlockingQueue<Message> messageQueue = new ArrayBlockingQueue<>(100);
+  protected BlockingQueue<AbstractMessage> messageQueue =
+      new ArrayBlockingQueue<>(100);
   private boolean isConnected = true;
   private boolean isJavaFXExceptionLogged = false;
 
@@ -26,23 +28,27 @@ public abstract class Connection {
     return connectionNum;
   }
 
-  public final void addMessageHandler(MessageHandler handler) {
+  public final <T extends AbstractMessage> void addMessageHandler(
+      MessageHandler<T> handler) {
     messageHandlers.add(handler);
   }
 
-  public final void removeMessageHandler(MessageHandler handler) {
+  public final <T extends AbstractMessage> void removeMessageHandler(
+      MessageHandler<T> handler) {
     messageHandlers.remove(handler);
   }
 
-  public final void addMessageHandlerFX(MessageHandler handler) {
+  public final <T extends AbstractMessage> void addMessageHandlerFX(
+      MessageHandler<T> handler) {
     messageHandlersFX.add(handler);
   }
 
-  public final void removeMessageHandlerFX(MessageHandler handler) {
+  public final void removeMessageHandlerFX(
+      MessageHandler<AbstractMessage> handler) {
     messageHandlersFX.remove(handler);
   }
 
-  public final void send(Message message) {
+  public final void send(AbstractMessage message) {
     if (!isConnected()) {
       log.warn("Attempted to send but connection is not connected");
       return;
@@ -61,7 +67,7 @@ public abstract class Connection {
     return isConnected;
   }
 
-  public void notifyMessageReceived(Message message) {
+  public void notifyMessageReceived(AbstractMessage message) {
     // exceptions here should only occur if they were thrown at user level
     // during handling messages via onReceive()
 

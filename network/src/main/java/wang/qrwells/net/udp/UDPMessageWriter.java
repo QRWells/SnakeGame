@@ -1,13 +1,13 @@
 package wang.qrwells.net.udp;
 
-import wang.qrwells.net.Message;
+import wang.qrwells.message.AbstractMessage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 public class UDPMessageWriter {
-  public byte[] write(Message message) {
+  public byte[] write(AbstractMessage message) {
     var baos = new ByteArrayOutputStream();
     try (var out = new ObjectOutputStream(baos)) {
       out.writeObject(message);

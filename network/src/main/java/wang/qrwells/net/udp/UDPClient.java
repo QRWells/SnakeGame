@@ -5,7 +5,10 @@ import org.apache.logging.log4j.Logger;
 import wang.qrwells.net.Client;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
 
 public class UDPClient extends Client {
@@ -29,7 +32,7 @@ public class UDPClient extends Client {
   }
 
   @Override
-  protected void connect0() throws SocketException {
+  protected void connect0() {
     try (var _socket = new DatagramSocket()) {
       socket = _socket;
       _socket.connect(InetAddress.getByName(ip), port);
