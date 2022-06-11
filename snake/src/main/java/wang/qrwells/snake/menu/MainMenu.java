@@ -1,4 +1,4 @@
-package wang.qrwells.menu;
+package wang.qrwells.snake.menu;
 
 import com.almasb.fxgl.app.scene.FXGLMenu;
 import com.almasb.fxgl.app.scene.MenuType;

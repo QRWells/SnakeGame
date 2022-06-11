@@ -1,4 +1,4 @@
-package wang.qrwells.component;
+package wang.qrwells.snake.component;
 
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.component.Component;

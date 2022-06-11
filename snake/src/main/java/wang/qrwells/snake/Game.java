@@ -1,14 +1,14 @@
-package wang.qrwells;
+package wang.qrwells.snake;
 
-import wang.qrwells.component.Food;
-import wang.qrwells.component.SnakeHeadComponent;
+import wang.qrwells.snake.component.Food;
+import wang.qrwells.snake.component.SnakeHeadComponent;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class Game {
-  private int size;
-  private boolean isBounded;
+  private final int size;
+  private final boolean isBounded;
 
   private HashMap<UUID, SnakeHeadComponent> others;
 

@@ -18,9 +18,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
+import com.almasb.fxgl.app.GameApplication
 import components.TitleBar
 import view.ChatView
 import viewModel.ChatViewModel
+import wang.qrwells.snake.Main
+import kotlin.concurrent.thread
 
 @Composable
 @Preview
@@ -43,7 +46,10 @@ fun App() {
           verticalArrangement = Arrangement.Bottom
         ) {
           IconButton(onClick = {
-            wang.qrwells.snake.Main.launch(null)
+            thread {
+              // TODO: cannot start multiple times
+              GameApplication.launch(Main::class.java, emptyArray())
+            }
           }) {
             Icon(Icons.Default.List, "menu")
           }

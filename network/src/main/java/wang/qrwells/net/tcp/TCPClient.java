@@ -1,14 +1,13 @@
 package wang.qrwells.net.tcp;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import wang.qrwells.net.Client;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.logging.Logger;
 
 public class TCPClient extends Client {
-  private static final Logger log = LogManager.getLogger(TCPClient.class);
+  private static final Logger log = Logger.getLogger(TCPClient.class.getName());
   public boolean connected = false;
   private String host = "localhost";
   private int port = 8080;
@@ -36,11 +35,11 @@ public class TCPClient extends Client {
 
   @Override
   public void connect0() {
-    log.debug("Connecting to " + host + ":" + port);
+    log.info("Connecting to " + host + ":" + port);
     Socket socket;
     try {
       socket = new Socket(host, port);
-      log.debug("Created socket to " + host + ":" + port);
+      log.info("Created socket to " + host + ":" + port);
     } catch (Exception e) {
       throw new RuntimeException(
           "Failed to create a socket to address " + host + " : " + port +

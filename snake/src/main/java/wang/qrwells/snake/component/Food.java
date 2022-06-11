@@ -1,4 +1,4 @@
-package wang.qrwells.component;
+package wang.qrwells.snake.component;
 
 import javafx.geometry.Point2D;
 

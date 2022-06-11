@@ -1,7 +1,5 @@
 package wang.qrwells.net;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import wang.qrwells.Task;
 import wang.qrwells.message.MessageUtil;
 import wang.qrwells.net.tcp.TCPConnection;
@@ -12,9 +10,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class Client {
-  private static final Logger log = LogManager.getLogger(Client.class);
+  private static final Logger log = Logger.getLogger(Client.class.getName());
 
   private Connection connection;
 
@@ -32,8 +32,8 @@ public abstract class Client {
   }
 
   protected final void openTCPConnection(Socket socket) throws Exception {
-    log.debug(getClass().getSimpleName() + " opening new connection from " +
-              socket.getInetAddress() + ":" + socket.getPort());
+    log.info(getClass().getSimpleName() + " opening new connection from " +
+             socket.getInetAddress() + ":" + socket.getPort());
 
     socket.setTcpNoDelay(true);
     socket.setKeepAlive(true);
@@ -56,7 +56,7 @@ public abstract class Client {
           writer.write(message);
         }
       } catch (Exception e) {
-        log.warn(sendThreadName + " crashed", e);
+        log.log(Level.WARNING, sendThreadName + " crashed", e);
       }
     }).start();
 
@@ -71,22 +71,23 @@ public abstract class Client {
                 MessageUtil.parseMessage(ByteBuffer.wrap(message)));
 
           } catch (EOFException e) {
-            log.debug("Connection was correctly closed from remote endpoint.");
+            log.info("Connection was correctly closed from remote endpoint.");
 
             connection.terminate();
           } catch (SocketException e) {
             if (!connection.isClosedLocally()) {
-              log.debug("Connection was unexpectedly disconnected: " +
-                        e.getMessage());
+              log.info("Connection was unexpectedly disconnected: " +
+                       e.getMessage());
               connection.terminate();
             }
           } catch (Exception e) {
-            log.warn("Connection had unspecified error during receive()", e);
+            log.log(Level.WARNING,
+                    "Connection had unspecified error during receive()", e);
             connection.terminate();
           }
         }
       } catch (Exception e) {
-        log.warn(recvThreadName + " crashed", e);
+        log.log(Level.WARNING, recvThreadName + " crashed", e);
       }
 
       onConnectionClosed(connection);
@@ -94,7 +95,7 @@ public abstract class Client {
   }
 
   protected final void openUDPConnection(UDPConnection connection) {
-    log.debug("Opening UDP connection.");
+    log.info("Opening UDP connection.");
 
     onConnectionOpened(connection);
 
@@ -113,7 +114,7 @@ public abstract class Client {
           connection.sendUDP(bytes);
         }
       } catch (Exception e) {
-        log.warn(sendThreadName + " crashed", e);
+        log.log(Level.WARNING, sendThreadName + " crashed", e);
       }
     }).start();
 
@@ -131,23 +132,23 @@ public abstract class Client {
           connection.notifyMessageReceived(message);
         }
       } catch (Exception e) {
-        log.warn(recvThreadName + " crashed", e);
+        log.log(Level.WARNING, recvThreadName + " crashed", e);
       }
     }).start();
   }
 
   private void onConnectionOpened(Connection connection) {
-    log.debug(getClass().getSimpleName() + " successfully opened connection.");
+    log.info(getClass().getSimpleName() + " successfully opened connection.");
 
     try {
       onConnected.accept(connection);
     } catch (Exception e) {
-      log.warn("Exception occurred in onConnected callback", e);
+      log.log(Level.WARNING, "Exception occurred in onConnected callback", e);
     }
   }
 
   protected final void onConnectionClosed(Connection connection) {
-    log.debug(getClass().getSimpleName() + " connection was closed");
+    log.info(getClass().getSimpleName() + " connection was closed");
     onDisconnected.accept(connection);
   }
 
