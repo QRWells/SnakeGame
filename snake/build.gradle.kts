@@ -4,7 +4,7 @@ plugins {
   id("org.openjfx.javafxplugin") version "0.0.13"
 }
 
-group = "wang.qrwells.sanke"
+group = "wang.qrwells.snake"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -16,6 +16,7 @@ dependencies {
   testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:+")
   implementation("org.jetbrains.kotlin:kotlin-stdlib:1.5.32")
   implementation("com.github.almasb:fxgl:+")
+  implementation("org.jetbrains:annotations:+")
 
   implementation(project(":network"))
 }
