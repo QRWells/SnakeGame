@@ -36,12 +36,11 @@ kotlin {
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation("io.vertx:vertx-jdbc-client:+")
-        implementation("com.github.almasb:fxgl:+")
         implementation("org.jetbrains.exposed:exposed-core:+")
         implementation("org.jetbrains.exposed:exposed-dao:+")
         implementation("org.jetbrains.exposed:exposed-jdbc:+")
+        implementation("org.openjfx:javafx-swing:18")
         implementation(project(":network"))
-        implementation(project(":snake"))
       }
     }
     val jvmTest by getting

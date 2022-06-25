@@ -15,5 +15,4 @@ pluginManagement {
 rootProject.name = "SnakeClient"
 
 include("chat")
-include("snake")
 include("network")
