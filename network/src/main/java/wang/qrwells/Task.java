@@ -160,28 +160,6 @@ public abstract class Task<T> {
     return then(t -> of(() -> mapper.apply(t)));
   }
 
-  public final javafx.concurrent.Task<T> toJavaFXTask() {
-    return new javafx.concurrent.Task<T>() {
-      @Override
-      protected T call() throws Exception {
-        if (isCancelled)
-          throwCancelException();
-
-        return onExecute();
-      }
-
-      @Override
-      protected void succeeded() {
-        succeed(getValue());
-      }
-
-      @Override
-      protected void failed() {
-        fail(getException());
-      }
-    };
-  }
-
   private void succeed(T result) {
     successAction.accept(result);
   }

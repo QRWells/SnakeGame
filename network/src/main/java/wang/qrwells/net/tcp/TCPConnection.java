@@ -7,8 +7,7 @@ import java.net.Socket;
 public class TCPConnection extends Connection {
   private final Socket socket;
 
-  public TCPConnection(Socket socket, int connectionNum) {
-    super(connectionNum);
+  public TCPConnection(Socket socket) {
     this.socket = socket;
   }
 

@@ -38,7 +38,7 @@ public class UDPClient extends Client {
       _socket.connect(InetAddress.getByName(ip), port);
       var connection = (UDPConnection) getConnection();
       if (connection == null) {
-        connection = new UDPConnection(1);
+        connection = new UDPConnection();
         openUDPConnection(connection);
         var packet = new DatagramPacket(MSG_OPEN, MSG_OPEN.length);
         _socket.send(packet);

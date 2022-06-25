@@ -38,7 +38,7 @@ public abstract class Client {
     socket.setTcpNoDelay(true);
     socket.setKeepAlive(true);
 
-    Connection connection = new TCPConnection(socket, 1);
+    Connection connection = new TCPConnection(socket);
 
     onConnectionOpened(connection);
 
@@ -139,7 +139,7 @@ public abstract class Client {
 
   private void onConnectionOpened(Connection connection) {
     log.info(getClass().getSimpleName() + " successfully opened connection.");
-
+    this.connection = connection;
     try {
       onConnected.accept(connection);
     } catch (Exception e) {
@@ -150,6 +150,7 @@ public abstract class Client {
   protected final void onConnectionClosed(Connection connection) {
     log.info(getClass().getSimpleName() + " connection was closed");
     onDisconnected.accept(connection);
+    this.connection = null;
   }
 
   public final Connection getConnection() {

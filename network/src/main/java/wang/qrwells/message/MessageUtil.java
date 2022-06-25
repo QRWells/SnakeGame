@@ -103,7 +103,15 @@ public class MessageUtil {
   }
 
   public static SnakeGameMessage parseSnakeGameMessage(ByteBuffer buffer) {
-    return new SnakeGameMessage(buffer.getLong(), buffer.getInt(),
-                                buffer.getInt());
+    var time = buffer.getLong();
+    var playerId = buffer.getInt();
+    var action = SnakeGameMessage.Action.fromOrdinal(buffer.getInt());
+    if (action == SnakeGameMessage.Action.EAT)
+      return new SnakeGameMessage(time, playerId, action, buffer.getShort(),
+                                  buffer.getShort());
+
+    return new SnakeGameMessage(time, playerId, action,
+                                SnakeGameMessage.Direction.fromOrdinal(
+                                    buffer.getInt()));
   }
 }

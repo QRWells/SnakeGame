@@ -11,11 +11,6 @@ public class UDPConnection extends Connection {
   private String ip;
   private int port;
   private int bufferSize;
-  private int connectionNum;
-
-  public UDPConnection(int connectionNum) {
-    super(connectionNum);
-  }
 
   public void sendUDP(byte[] bytes) {
 

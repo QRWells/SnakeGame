@@ -1,6 +1,5 @@
 package wang.qrwells.net;
 
-import javafx.application.Platform;
 import wang.qrwells.message.AbstractMessage;
 
 import java.util.ArrayList;
@@ -14,20 +13,9 @@ public abstract class Connection {
   protected static final Logger log = Logger.getLogger(
       Connection.class.getName());
   protected final List<MessageHandler> messageHandlers = new ArrayList<>();
-  protected final List<MessageHandler> messageHandlersFX = new ArrayList<>();
-  private final int connectionNum;
   protected BlockingQueue<AbstractMessage> messageQueue =
       new ArrayBlockingQueue<>(100);
   private boolean isConnected = true;
-  private boolean isJavaFXExceptionLogged = false;
-
-  public Connection(int connectionNum) {
-    this.connectionNum = connectionNum;
-  }
-
-  public final int getConnectionNum() {
-    return connectionNum;
-  }
 
   public final <T extends AbstractMessage> void addMessageHandler(
       MessageHandler<T> handler) {
@@ -37,16 +25,6 @@ public abstract class Connection {
   public final <T extends AbstractMessage> void removeMessageHandler(
       MessageHandler<T> handler) {
     messageHandlers.remove(handler);
-  }
-
-  public final <T extends AbstractMessage> void addMessageHandlerFX(
-      MessageHandler<T> handler) {
-    messageHandlersFX.add(handler);
-  }
-
-  public final void removeMessageHandlerFX(
-      MessageHandler<AbstractMessage> handler) {
-    messageHandlersFX.remove(handler);
   }
 
   public final void send(AbstractMessage message) {
@@ -74,19 +52,6 @@ public abstract class Connection {
 
     try {
       messageHandlers.forEach(h -> h.onReceive(this, message));
-
-      try {
-        Platform.runLater(
-            () -> messageHandlersFX.forEach(h -> h.onReceive(this, message)));
-      } catch (IllegalStateException e) {
-        // if javafx is not initialized then ignore
-        if (!isJavaFXExceptionLogged) {
-          log.log(Level.WARNING,
-                  "JavaFX is not initialized to handle messages on FX " +
-                  "thread", e);
-          isJavaFXExceptionLogged = true;
-        }
-      }
     } catch (Exception e) {
       log.log(Level.WARNING, "Exception during MessageHandler.onReceive()", e);
     }
@@ -94,17 +59,15 @@ public abstract class Connection {
 
   public final void terminate() {
     if (!isConnected()) {
-      log.warning("Attempted to close connection " + connectionNum + " but it" +
-                  " is already closed.");
+      log.warning("Attempted to close connection but it is already closed.");
       return;
     }
-    log.info("Closing connection " + connectionNum);
+    log.info("Closing connection");
 
     try {
       terminateImpl();
 
-      log.info("Connection " + connectionNum + " was correctly closed from " +
-               "local endpoint.");
+      log.info("Connection was correctly closed from local endpoint.");
     } catch (Exception e) {
       log.log(Level.WARNING, "Error during terminateImpl()", e);
     }

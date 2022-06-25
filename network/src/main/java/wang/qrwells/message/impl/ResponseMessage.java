@@ -21,6 +21,14 @@ public class ResponseMessage extends AbstractMessage {
     this.detail = detail;
   }
 
+  public String getDetail() {
+    return detail;
+  }
+
+  public int getStatus() {
+    return status;
+  }
+
   @Override
   public int getLength() {
     return HEADER_LENGTH + Integer.BYTES + (detail != null ? detail.getBytes(
