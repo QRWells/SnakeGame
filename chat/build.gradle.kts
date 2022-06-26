@@ -35,11 +35,11 @@ kotlin {
     val jvmMain by getting {
       dependencies {
         implementation(compose.desktop.currentOs)
-        implementation("io.vertx:vertx-jdbc-client:+")
         implementation("org.jetbrains.exposed:exposed-core:+")
         implementation("org.jetbrains.exposed:exposed-dao:+")
         implementation("org.jetbrains.exposed:exposed-jdbc:+")
-        implementation("org.openjfx:javafx-swing:18")
+        implementation("com.arkivanov.decompose:decompose:+")
+        implementation("com.arkivanov.decompose:extensions-compose-jetbrains:+")
         implementation(project(":network"))
       }
     }

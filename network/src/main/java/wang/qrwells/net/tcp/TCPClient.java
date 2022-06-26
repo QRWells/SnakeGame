@@ -16,6 +16,7 @@ public class TCPClient extends Client {
     this.host = host;
     this.port = port;
   }
+
   public TCPClient() {
   }
 
@@ -34,7 +35,7 @@ public class TCPClient extends Client {
   }
 
   @Override
-  public void connect0() {
+  public void connect() {
     log.info("Connecting to " + host + ":" + port);
     Socket socket;
     try {
@@ -47,17 +48,21 @@ public class TCPClient extends Client {
     }
     try {
       openTCPConnection(socket);
+      connected = true;
     } catch (Exception e) {
       disconnect();
       throw new RuntimeException(
           "Failed to open TCP connection to " + host + ":" + port + " Error: " +
           e, e);
     }
-    connected = true;
   }
 
   @Override
   public void disconnect() {
-    getConnection().terminate();
+    var connection = getConnection();
+    if (connection != null) {
+      connection.terminate();
+      connected = false;
+    }
   }
 }

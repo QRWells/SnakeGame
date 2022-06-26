@@ -157,17 +157,7 @@ public abstract class Client {
     return connection;
   }
 
-  public final void connect() {
-    Thread t = new Thread(connectTask()::run, "ClientThread");
-    t.setDaemon(true);
-    t.start();
-  }
-
-  public final Task<Void> connectTask() {
-    return Task.ofVoid("ClientConnect", this::connect0);
-  }
-
-  protected abstract void connect0();
+  public abstract void connect();
 
   public abstract void disconnect();
 

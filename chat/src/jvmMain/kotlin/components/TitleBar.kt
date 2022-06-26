@@ -7,9 +7,9 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.KeyboardArrowDown
-import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +21,8 @@ import androidx.compose.ui.unit.sp
 @Preview
 fun TitleBar(
   onMinClick: () -> Unit,
-  onCloseClick: () -> Unit
+  onCloseClick: () -> Unit,
+  title: String,
 ) {
   MaterialTheme(
     MaterialTheme.colors,
@@ -29,7 +30,7 @@ fun TitleBar(
     MaterialTheme.shapes
   ) {
     Row(
-      Modifier.fillMaxWidth().height(32.dp).padding(top = 4.dp, bottom = 4.dp),
+      Modifier.fillMaxWidth().height(36.dp).padding(top = 4.dp, bottom = 4.dp),
       Arrangement.Center
     ) {
       Row(
@@ -37,13 +38,18 @@ fun TitleBar(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.weight(1.0f)
       ) {
-        Icon(
-          Icons.Outlined.Menu,
-          "Snake",
-          Modifier.size(24.dp)
-        )
+        Column(
+          modifier = Modifier.width(48.dp),
+          horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+          Icon(
+            Icons.Outlined.Call,
+            "AppIcon",
+            Modifier.size(24.dp)
+          )
+        }
         Text(
-          text = "Snake",
+          text = title,
           fontSize = 24.sp,
           fontFamily = FontFamily.SansSerif,
           modifier = Modifier.padding(start = 4.dp)

@@ -2,7 +2,7 @@ package data
 
 abstract class Option<T>(var value: T) {
   fun get(): T = value
-  abstract fun set(value: T);
+  abstract fun set(value: T)
 }
 
 class BooleanOption(value: Boolean) : Option<Boolean>(value){

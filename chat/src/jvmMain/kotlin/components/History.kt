@@ -16,7 +16,7 @@ import data.Message
 
 @Composable
 @Preview
-fun History(modifier: Modifier, list: SnapshotStateList<Message>, self: Long) {
+fun History(modifier: Modifier, list: SnapshotStateList<Message>, self: Int) {
   Box(modifier = modifier) {
     val listState = rememberLazyListState()
     LazyColumn(

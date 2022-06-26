@@ -32,7 +32,7 @@ public class UDPClient extends Client {
   }
 
   @Override
-  protected void connect0() {
+  public void connect() {
     try (var _socket = new DatagramSocket()) {
       socket = _socket;
       _socket.connect(InetAddress.getByName(ip), port);

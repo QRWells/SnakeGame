@@ -1,0 +1,5 @@
+package viewModel
+
+class SnakeViewModel {
+
+}

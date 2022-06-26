@@ -4,9 +4,9 @@ import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedTextField
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.unit.dp
 import components.History
 import data.Message
@@ -25,29 +27,45 @@ import java.time.LocalDateTime
 @Preview
 fun ChatView(viewModel: ChatViewModel) {
   Row(Modifier.fillMaxSize()) {
-    Box(
-      modifier = Modifier.weight(3f, true)
-    ) {
-      val stateVertical = rememberScrollState(0)
+    Column(modifier = Modifier.weight(3f, true)) {
       Box(
-        modifier = Modifier.fillMaxSize().verticalScroll(stateVertical)
-          .padding(end = 12.dp, bottom = 12.dp)
+        modifier = Modifier.fillMaxSize()
       ) {
-        Column {
-          for (item in 0..30) {
-            Text("Item #$item")
-            if (item < 30) {
+        val stateVertical = rememberScrollState(0)
+        Box(
+          modifier = Modifier.fillMaxSize().verticalScroll(stateVertical)
+            .padding(end = 12.dp, bottom = 12.dp)
+        ) {
+          Column {
+            for (item in viewModel.contacts) {
+              Text(item.value.name)
               Spacer(modifier = Modifier.height(5.dp))
             }
           }
         }
+        VerticalScrollbar(
+          modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
+          adapter = rememberScrollbarAdapter(stateVertical)
+        )
+        FloatingActionButton(
+          modifier = Modifier.padding(16.dp).size(36.dp)
+            .align(Alignment.BottomEnd),
+          onClick = {
+          }
+        ) {
+          Icon(
+            Icons.Default.Add,
+            "Add",
+            Modifier.size(24.dp)
+          )
+        }
       }
-      VerticalScrollbar(
-        modifier = Modifier.align(Alignment.CenterEnd).fillMaxHeight(),
-        adapter = rememberScrollbarAdapter(stateVertical)
-      )
     }
+    Column(modifier = Modifier.width(4.dp).fillMaxHeight()) {
+      Box(modifier = Modifier.fillMaxSize().background(Color.LightGray)) {
 
+      }
+    }
     Column(
       modifier = Modifier.weight(6f, true)
     ) {
@@ -69,20 +87,24 @@ fun ChatView(viewModel: ChatViewModel) {
           text,
           onValueChange = { text = it },
           modifier = Modifier.align(Alignment.TopStart).fillMaxSize()
-            .heightIn(32.dp, 64.dp).padding(8.dp)
+            .heightIn(32.dp, 64.dp).padding(8.dp).onPreviewKeyEvent {
+              println(it.key.keyCode);false
+            }
         )
         Button(
           onClick = {
             text.trim().let {
               text = ""
               if (it.isNotEmpty()) {
+                var message = Message(
+                  viewModel.self,
+                  viewModel.with,
+                  it,
+                  LocalDateTime.now()
+                )
+
                 history.add(
-                  Message(
-                    viewModel.self,
-                    viewModel.with,
-                    it,
-                    LocalDateTime.now()
-                  )
+                  message
                 )
               }
             }

@@ -1,75 +1,57 @@
 import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.window.WindowDraggableArea
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import com.almasb.fxgl.app.GameApplication
 import components.TitleBar
-import view.ChatView
-import viewModel.ChatViewModel
-import wang.qrwells.snake.Main
-import kotlin.concurrent.thread
+import data.Context
+import org.jetbrains.exposed.sql.Database
+import screen.LoginScreen
+import view.MainScreen
+import viewModel.LoginViewModel
+import viewModel.MainScreenViewModel
 
 @Composable
 @Preview
-fun App() {
+fun App(onTitleChange: (String) -> Unit) {
+  val loginViewModel = LoginViewModel()
+  val mainScreenViewModel = MainScreenViewModel()
+  val loggedIn = remember { mutableStateOf(false) }
   MaterialTheme {
-    Row(Modifier.fillMaxSize()) {
-      Box(
-        modifier = Modifier.width(48.dp),
-      ) {
-        Column(
-          modifier = Modifier.fillMaxWidth(),
-          verticalArrangement = Arrangement.Top
-        ) {
-          IconButton(onClick = {}) {
-            Icon(Icons.Default.AccountCircle, "You")
-          }
-        }
-        Column(
-          modifier = Modifier.fillMaxSize(),
-          verticalArrangement = Arrangement.Bottom
-        ) {
-          IconButton(onClick = {
-            thread {
-              // TODO: cannot start multiple times
-              GameApplication.launch(Main::class.java, emptyArray())
-            }
-          }) {
-            Icon(Icons.Default.List, "menu")
-          }
-          IconButton(onClick = { }) {
-            Icon(Icons.Default.Settings, "settings")
-          }
-        }
-      }
-      Box {
-        val chatViewModel = ChatViewModel()
-        ChatView(chatViewModel)
-      }
+    if (!loggedIn.value) {
+      onTitleChange("Login")
+      LoginScreen(loginViewModel, onLogin = {
+        Database.connect(
+          "jdbc:sqlite:user",
+          "org.sqlite.JDBC",
+        )
+        mainScreenViewModel.chatViewModel.self = it.id
+        Context.user = it
+        loggedIn.value = true
+      }, onRegister = {
+        mainScreenViewModel.chatViewModel.self = it.id
+        Context.user = it
+        loggedIn.value = true
+      })
+    } else {
+      onTitleChange("Chat")
+      MainScreen(mainScreenViewModel)
     }
   }
 }
 
 fun main() = application {
-  var isOpen by rememberSaveable { mutableStateOf(true) }
   val state = rememberWindowState(isMinimized = false)
-  if (isOpen) Window(
+  val title = remember { mutableStateOf("Login") }
+
+  Window(
     onCloseRequest = ::exitApplication,
     title = "Snake",
     undecorated = true,
@@ -77,10 +59,16 @@ fun main() = application {
   ) {
     Column(Modifier.fillMaxSize()) {
       WindowDraggableArea {
-        TitleBar(onMinClick = { state.isMinimized = !state.isMinimized },
-          onCloseClick = { isOpen = false })
+        TitleBar(
+          onMinClick = { state.isMinimized = !state.isMinimized },
+          onCloseClick = {
+            // todo : save state
+            Client.close()
+            exitApplication()
+          }, title.value
+        )
       }
-      App()
+      App { title.value = it }
     }
   }
 }
