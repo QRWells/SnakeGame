@@ -1,13 +1,14 @@
 package wang.qrwells.net.tcp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import wang.qrwells.net.Client;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.logging.Logger;
 
 public class TCPClient extends Client {
-  private static final Logger log = Logger.getLogger(TCPClient.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(TCPClient.class);
   public boolean connected = false;
   private String host = "localhost";
   private int port = 8080;

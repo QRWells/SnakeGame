@@ -17,5 +17,6 @@ public class TCPMessageWriter {
     var bytes = message.getBytes();
     out.writeInt(bytes.length);
     out.write(bytes);
+    out.flush();
   }
 }

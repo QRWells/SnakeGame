@@ -1,6 +1,7 @@
 package wang.qrwells.net;
 
-import wang.qrwells.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import wang.qrwells.message.MessageUtil;
 import wang.qrwells.net.tcp.TCPConnection;
 import wang.qrwells.net.udp.UDPConnection;
@@ -10,11 +11,9 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class Client {
-  private static final Logger log = Logger.getLogger(Client.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(Client.class);
 
   private Connection connection;
 
@@ -56,7 +55,7 @@ public abstract class Client {
           writer.write(message);
         }
       } catch (Exception e) {
-        log.log(Level.WARNING, sendThreadName + " crashed", e);
+        log.warn(sendThreadName + " crashed", e);
       }
     }).start();
 
@@ -67,8 +66,11 @@ public abstract class Client {
         while (connection.isConnected()) {
           try {
             var message = reader.read();
-            connection.notifyMessageReceived(
-                MessageUtil.parseMessage(ByteBuffer.wrap(message)));
+            log.info(getClass().getSimpleName() + " received message with " +
+                     "length: " + message.length);
+            var buffer = ByteBuffer.wrap(message);
+            log.info("pos: " + buffer.position() + " limit: " + buffer.limit());
+            connection.notifyMessageReceived(MessageUtil.parseMessage(buffer));
 
           } catch (EOFException e) {
             log.info("Connection was correctly closed from remote endpoint.");
@@ -81,13 +83,12 @@ public abstract class Client {
               connection.terminate();
             }
           } catch (Exception e) {
-            log.log(Level.WARNING,
-                    "Connection had unspecified error during receive()", e);
+            log.warn("Connection had unspecified error during receive()", e);
             connection.terminate();
           }
         }
       } catch (Exception e) {
-        log.log(Level.WARNING, recvThreadName + " crashed", e);
+        log.warn(recvThreadName + " crashed", e);
       }
 
       onConnectionClosed(connection);
@@ -114,7 +115,7 @@ public abstract class Client {
           connection.sendUDP(bytes);
         }
       } catch (Exception e) {
-        log.log(Level.WARNING, sendThreadName + " crashed", e);
+        log.warn( sendThreadName + " crashed", e);
       }
     }).start();
 
@@ -132,7 +133,7 @@ public abstract class Client {
           connection.notifyMessageReceived(message);
         }
       } catch (Exception e) {
-        log.log(Level.WARNING, recvThreadName + " crashed", e);
+        log.warn( recvThreadName + " crashed", e);
       }
     }).start();
   }
@@ -143,7 +144,7 @@ public abstract class Client {
     try {
       onConnected.accept(connection);
     } catch (Exception e) {
-      log.log(Level.WARNING, "Exception occurred in onConnected callback", e);
+      log.warn("Exception occurred in onConnected callback", e);
     }
   }
 

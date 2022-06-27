@@ -1,15 +1,14 @@
 package wang.qrwells;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class Task<T> {
-
-  private static final Logger log = java.util.logging.Logger.getLogger(
-      Task.class.getName());
+  private static final Logger log = LoggerFactory.getLogger(Task.class);
 
   private static final String DEFAULT_NAME = "NoName";
 
@@ -17,9 +16,8 @@ public abstract class Task<T> {
 
   private Consumer<T> successAction = (result) -> {
   };
-  private Consumer<Throwable> failAction = (e) -> {
-    log.log(Level.WARNING, getName() + " failed", e);
-  };
+  private Consumer<Throwable> failAction = (e) -> log.warn(
+      getName() + " failed", e);
   private Runnable cancelAction = () -> {
 
   };
@@ -52,7 +50,7 @@ public abstract class Task<T> {
   }
 
   public static <R> Task<R> of(String name, Callable<R> action) {
-    return new Task<R>(name) {
+    return new Task<>(name) {
       @Override
       protected R onExecute() throws Exception {
         return action.call();

@@ -1,5 +1,7 @@
 package wang.qrwells.net.udp;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import wang.qrwells.net.Client;
 
 import java.io.IOException;
@@ -8,8 +10,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UDPClient extends Client {
   private static final byte[] MSG_OPEN = new byte[]{
@@ -22,7 +22,7 @@ public class UDPClient extends Client {
   };
   private final String ip;
   private final int port;
-  private final Logger log = Logger.getLogger(UDPClient.class.getName());
+  private final Logger log = LoggerFactory.getLogger(UDPClient.class);
   private boolean isStopped = false;
   private DatagramSocket socket = null;
 
@@ -76,7 +76,7 @@ public class UDPClient extends Client {
   @Override
   public void disconnect() {
     if (isStopped) {
-      log.warning("Attempted to stop a client that is already stopped");
+      log.warn("Attempted to stop a client that is already stopped");
       return;
     }
     isStopped = true;
@@ -84,7 +84,7 @@ public class UDPClient extends Client {
     try {
       socket.close();
     } catch (Exception e) {
-      log.log(Level.WARNING, "Exception when closing client socket: " + e.getMessage(), e);
+      log.warn("Exception when closing client socket: " + e.getMessage(), e);
     }
   }
 }

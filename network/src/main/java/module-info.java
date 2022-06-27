@@ -1,5 +1,5 @@
 module SnakeClient.network.main {
-  requires java.logging;
+  requires org.slf4j;
 
   exports wang.qrwells.net;
   exports wang.qrwells.net.tcp;
