@@ -23,7 +23,7 @@ fun MessageRow(message: Message, self: Boolean) {
     horizontalAlignment = if (self) Alignment.End else Alignment.Start,
     verticalArrangement = Arrangement.Top
   ) {
-    Text("${message.sender}", fontSize = 12.sp)
+    Text(message.senderName, fontSize = 12.sp)
     Box(
       modifier = Modifier.clip(shape = RoundedCornerShape(4.dp))
         .background(color = Color(0, 0, 0, 20))

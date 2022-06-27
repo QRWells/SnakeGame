@@ -1,39 +1,38 @@
-package view
+package screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.List
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import view.ChatView
+import view.SettingsView
 import viewModel.MainScreenViewModel
 
 @Composable
 fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
   val chatViewModel = mainScreenViewModel.chatViewModel
   val snakeViewModel = mainScreenViewModel.snakeViewModel
-  val settingsViewModel = mainScreenViewModel.settingsViewModel
 
   val currentView = remember { mutableStateOf(ViewState.Chat) }
 
   Row(Modifier.fillMaxSize()) {
     Box(
-      modifier = Modifier.width(48.dp).background(color = Color(235, 235, 235)),
+      modifier = Modifier.width(48.dp).background(color = MaterialTheme.colors.secondary),
     ) {
       Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Top
       ) {
         IconButton(onClick = { currentView.value = ViewState.Chat }) {
-          Icon(Icons.Default.AccountCircle, "You")
+          Icon(Icons.Default.MailOutline, "Chat")
         }
       }
       Column(
@@ -41,9 +40,9 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
         verticalArrangement = Arrangement.Bottom
       ) {
         IconButton(onClick = {
-          // todo :switch to snake
+          currentView.value = ViewState.Snake
         }) {
-          Icon(Icons.Default.List, "menu")
+          Icon(Icons.Default.Refresh, "Snake")
         }
         IconButton(onClick = { currentView.value = ViewState.Settings }) {
           Icon(Icons.Default.Settings, "settings")
@@ -54,7 +53,7 @@ fun MainScreen(mainScreenViewModel: MainScreenViewModel) {
       when (currentView.value) {
         ViewState.Chat -> ChatView(chatViewModel)
 //        ViewState.Snake -> SnakeView(snakeViewModel)
-        ViewState.Settings -> SettingsView(settingsViewModel)
+        ViewState.Settings -> SettingsView()
       }
     }
   }

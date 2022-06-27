@@ -1,5 +1,3 @@
 package viewModel
 
-class SnakeViewModel {
-
-}
+class SnakeViewModel

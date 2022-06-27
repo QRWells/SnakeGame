@@ -13,10 +13,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import data.Message
+import data.User
 
 @Composable
 @Preview
-fun History(modifier: Modifier, list: SnapshotStateList<Message>, self: Int) {
+fun History(modifier: Modifier, list: SnapshotStateList<Message>, self: User) {
   Box(modifier = modifier) {
     val listState = rememberLazyListState()
     LazyColumn(
@@ -24,7 +25,7 @@ fun History(modifier: Modifier, list: SnapshotStateList<Message>, self: Int) {
       state = listState
     ) {
       items(list) { message ->
-        MessageRow(message, self = message.sender == self)
+        MessageRow(message, self = message.sender == self.id)
         Spacer(modifier = Modifier.height(4.dp))
       }
     }

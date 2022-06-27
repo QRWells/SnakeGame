@@ -7,7 +7,7 @@ import wang.qrwells.net.tcp.TCPClient
 object Client {
   private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
   private val client = TCPClient()
-  private var isConnected = false
+  var isConnected = false
 
   init {
     client.setOnConnected {
@@ -38,8 +38,16 @@ object Client {
     }
   }
 
-  fun <T : AbstractMessage> addHandler(handler: MessageHandler<T>) {
-    client.connection.addMessageHandler(handler)
+  fun addHandler(name: String, handler: MessageHandler) {
+    client.connection.addMessageHandler(name, handler)
+  }
+
+  fun removeHandler(name: String) {
+    client.connection.removeMessageHandler(name)
+  }
+
+  fun clearHandler() {
+    client.connection.clearMessageHandlers()
   }
 
   fun close() {

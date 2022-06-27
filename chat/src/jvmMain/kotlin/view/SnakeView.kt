@@ -8,8 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -24,7 +22,6 @@ import data.GameObject
 import data.SnakeGame
 import data.SnakeHeadData
 import wang.qrwells.message.impl.SnakeGameMessage
-import wang.qrwells.net.MessageHandler
 
 @Composable
 fun GameObjectTile(
@@ -64,9 +61,11 @@ fun SnakeView(snakeGame: SnakeGame) {
   var lastUpdate by mutableStateOf(0L)
   var tileSize by mutableStateOf(Pair(20.dp, 20.dp))
 
-  Client.addHandler(MessageHandler<SnakeGameMessage> { connection, message ->
-    snakeGame.handleMessage(connection, message)
-  })
+  Client.addHandler("gameHandler") { connection, message ->
+    if (message is SnakeGameMessage) {
+      snakeGame.handleMessage(connection, message)
+    }
+  }
 
   LaunchedEffect(Unit) {
     while (true) {
@@ -91,7 +90,7 @@ fun SnakeView(snakeGame: SnakeGame) {
       game.registerKeyEvent(it)
     }) {
     game.gameObjects.forEach {
-      when (it){
+      when (it) {
         is SnakeHeadData -> GameObjectTileRound(it, tileSize)
         else -> GameObjectTile(it, tileSize)
       }

@@ -70,6 +70,7 @@ class Snake(
 class SnakeGame(
   width: Int,
   height: Int,
+  private val sessionId : Int,
   private val id: Int,
   private val self: Snake,
   private val other: Map<Int, Snake>,
@@ -158,9 +159,9 @@ class SnakeGame(
       food.y = Random.nextInt(areaSize)
       // send eaten food message with new food position
       Client.send(
-        SnakeGameMessage.makeMessage(
+        SnakeGameMessage.makeEatMessage(
           id,
-          SnakeGameMessage.Action.EAT,
+          sessionId,
           food.x,
           food.y
         )
