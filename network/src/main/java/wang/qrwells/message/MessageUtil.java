@@ -1,5 +1,6 @@
 package wang.qrwells.message;
 
+
 import wang.qrwells.message.impl.*;
 
 import java.nio.ByteBuffer;
@@ -24,6 +25,7 @@ public class MessageUtil {
       case MessageType.CHAT -> parseChatMessage(buffer);
       case MessageType.TIME -> parseTimeMessage(buffer);
       case MessageType.FILE -> parseFileMessage(buffer);
+      case MessageType.ID_REQUEST -> parseIdRequestMessage(buffer);
       default -> throw new IllegalStateException("Unexpected value: " + type);
     };
   }
@@ -61,6 +63,13 @@ public class MessageUtil {
     }
   }
 
+  private static IdRequestMessage parseIdRequestMessage(ByteBuffer buffer) {
+    int id = buffer.getInt();
+    boolean isGroup = id < 0;
+    id = id & ~(1 << 31);
+    return new IdRequestMessage(isGroup, id);
+  }
+
   public static ChatMessage parseChatMessage(ByteBuffer buffer) {
     var senderId = buffer.getInt();
     var receiverId = buffer.getInt();
@@ -75,10 +84,10 @@ public class MessageUtil {
 
   public static RegisterMessage parseRegisterMessage(ByteBuffer buffer) {
     var nameLen = buffer.getInt();
-    var name = new byte[nameLen];
-    buffer.get(name, 0, nameLen);
     var pwdLen = buffer.getInt();
+    var name = new byte[nameLen];
     var pwd = new byte[pwdLen];
+    buffer.get(name, 0, nameLen);
     buffer.get(pwd, 0, pwdLen);
     return new RegisterMessage(new String(name, StandardCharsets.UTF_8),
                                new String(pwd, StandardCharsets.UTF_8));
@@ -86,32 +95,32 @@ public class MessageUtil {
 
   public static LoginMessage parseLoginMessage(ByteBuffer buffer) {
     var nameLen = buffer.getInt();
-    var name = new byte[nameLen];
-    buffer.get(name, 0, nameLen);
     var pwdLen = buffer.getInt();
+    var name = new byte[nameLen];
     var pwd = new byte[pwdLen];
+    buffer.get(name, 0, nameLen);
     buffer.get(pwd, 0, pwdLen);
     return new LoginMessage(new String(name, StandardCharsets.UTF_8),
                             new String(pwd, StandardCharsets.UTF_8));
   }
 
   public static LogoutMessage parseLogoutMessage(ByteBuffer buffer) {
-    var nameLen = buffer.getInt();
-    var name = new byte[nameLen];
-    buffer.get(name, 0, nameLen);
-    return new LogoutMessage(new String(name, StandardCharsets.UTF_8));
+    var id = buffer.getInt();
+    return new LogoutMessage(id);
   }
 
   public static SnakeGameMessage parseSnakeGameMessage(ByteBuffer buffer) {
     var time = buffer.getLong();
+    var sessionId = buffer.getInt();
     var playerId = buffer.getInt();
     var action = SnakeGameMessage.Action.fromOrdinal(buffer.getInt());
     if (action == SnakeGameMessage.Action.EAT)
-      return new SnakeGameMessage(time, playerId, action, buffer.getShort(),
-                                  buffer.getShort());
+      return new SnakeGameMessage(time, sessionId, playerId, action,
+                                  SnakeGameMessage.Direction.NONE,
+                                  buffer.getShort(), buffer.getShort());
 
-    return new SnakeGameMessage(time, playerId, action,
+    return new SnakeGameMessage(time, sessionId, playerId, action,
                                 SnakeGameMessage.Direction.fromOrdinal(
-                                    buffer.getInt()));
+                                    buffer.getInt()), 0, 0);
   }
 }

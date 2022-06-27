@@ -9,4 +9,5 @@ public class MessageType {
   public static final int GAME_SNAKE = 0x05;
   public static final int FILE = 0x06;
   public static final int TIME = 0x07;
+  public static final int ID_REQUEST = 0x08;
 }

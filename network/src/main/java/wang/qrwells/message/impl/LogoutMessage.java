@@ -5,22 +5,21 @@ import wang.qrwells.message.AbstractMessage;
 import wang.qrwells.message.MessageType;
 
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 
 public class LogoutMessage extends AbstractMessage {
-  private final String username;
+  private final int userId;
 
-  public LogoutMessage(String userName) {
-    this.username = userName;
+  public LogoutMessage(int userId) {
+    this.userId = userId;
   }
 
-  public String getUsername() {
-    return username;
+  public int getUserId() {
+    return userId;
   }
 
   @Override
   public int getLength() {
-    return username.length() + HEADER_LENGTH;
+    return Integer.BYTES + HEADER_LENGTH;
   }
 
   @Override
@@ -32,7 +31,7 @@ public class LogoutMessage extends AbstractMessage {
   public byte[] getBytes() {
     var result = ByteBuffer.allocate(getLength());
     writeHeader(result);
-    result.put(username.getBytes(StandardCharsets.UTF_8));
+    result.putInt(userId);
     return result.array();
   }
 }

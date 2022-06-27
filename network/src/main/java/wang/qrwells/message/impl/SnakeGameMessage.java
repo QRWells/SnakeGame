@@ -1,6 +1,5 @@
 package wang.qrwells.message.impl;
 
-
 import wang.qrwells.message.AbstractMessage;
 import wang.qrwells.message.MessageType;
 
@@ -14,39 +13,25 @@ public class SnakeGameMessage extends AbstractMessage {
   private final int playerId;
   private final Direction direction;
 
+  private final int sessionId;
   private final int x;
   private final int y;
 
-  public SnakeGameMessage(long timeStamp, int playerId, Action action,
-                          Direction direction) {
+  public SnakeGameMessage(long timeStamp, int sessionId, int playerId,
+                          Action action, Direction direction, int x, int y) {
     this.timeStamp = timeStamp;
+    this.sessionId = sessionId;
     this.playerId = playerId;
     this.action = action;
     this.direction = direction;
-    this.x = -1;
-    this.y = -1;
-  }
-
-  public SnakeGameMessage(long timeStamp, int playerId, Action action, int x,
-                          int y) {
-    this.timeStamp = timeStamp;
-    this.playerId = playerId;
-    this.action = action;
-    this.direction = Direction.NONE;
     this.x = x;
     this.y = y;
   }
 
-  public static SnakeGameMessage makeMessage(int playerId, Action action,
-                                             Direction direction) {
-    return new SnakeGameMessage(System.currentTimeMillis(), playerId, action,
-                                direction);
-  }
-
-  public static SnakeGameMessage makeMessage(int playerId, Action action, int x,
-                                             int y) {
-    return new SnakeGameMessage(System.currentTimeMillis(), playerId, action, x,
-                                y);
+  public static SnakeGameMessage makeEatMessage(int id, int sessionId, int x,
+                                                int y) {
+    return new SnakeGameMessage(System.currentTimeMillis(), sessionId, id,
+                                Action.EAT, Direction.NONE, x, y);
   }
 
   public int getX() {
@@ -88,14 +73,24 @@ public class SnakeGameMessage extends AbstractMessage {
     var result = ByteBuffer.allocate(getLength());
     writeHeader(result);
     result.putLong(timeStamp)
+          .putInt(sessionId)
           .putInt(playerId)
-          .putInt(action.getOrdinal())
-          .putInt(direction.getOrdinal());
+          .putInt(action.getOrdinal());
+    if (action == Action.EAT) {
+      result.putShort((short) x)
+            .putShort((short) y);
+    } else {
+      result.putInt(direction.getOrdinal());
+    }
     return result.array();
   }
 
+  public int getSessionId() {
+    return sessionId;
+  }
+
   public enum Action {
-    MOVE(0), EAT(1), DIE(2), START(3), STOP(4);
+    MOVE(0), EAT(1), DIE(2), START(3), JOIN(4), STOP(5);
     private static final Map<Integer, Action> ordinalToAction = new HashMap<>();
 
     static {
