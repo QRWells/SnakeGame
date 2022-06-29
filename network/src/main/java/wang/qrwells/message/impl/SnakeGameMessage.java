@@ -12,7 +12,6 @@ public class SnakeGameMessage extends AbstractMessage {
   private final long timeStamp;
   private final int playerId;
   private final Direction direction;
-
   private final int sessionId;
   private final int x;
   private final int y;
@@ -90,7 +89,7 @@ public class SnakeGameMessage extends AbstractMessage {
   }
 
   public enum Action {
-    MOVE(0), EAT(1), DIE(2), START(3), JOIN(4), STOP(5);
+    MOVE(0), EAT(1), DIE(2), START(3), JOIN(4), STOP(5), QUERY(6);
     private static final Map<Integer, Action> ordinalToAction = new HashMap<>();
 
     static {

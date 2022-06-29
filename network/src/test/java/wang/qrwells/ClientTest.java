@@ -2,7 +2,7 @@ package wang.qrwells;
 
 import org.junit.jupiter.api.Test;
 import wang.qrwells.message.impl.LoginMessage;
-import wang.qrwells.net.tcp.TCPClient;
+import wang.qrwells.net.client.tcp.TCPClient;
 
 public class ClientTest {
   @Test
@@ -18,7 +18,7 @@ public class ClientTest {
     client.setOnDisconnected((c) -> System.out.println("disconnected"));
 
     if (client.connected) {
-      client.getConnection().addMessageHandler((c, msg) -> {
+      client.getConnection().addMessageHandler("init",(c, msg) -> {
         System.out.println(msg);
       });
       client.getConnection()

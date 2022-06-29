@@ -5,6 +5,7 @@ import wang.qrwells.message.impl.*;
 
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class MessageUtil {
   /**
@@ -26,8 +27,37 @@ public class MessageUtil {
       case MessageType.TIME -> parseTimeMessage(buffer);
       case MessageType.FILE -> parseFileMessage(buffer);
       case MessageType.ID_REQUEST -> parseIdRequestMessage(buffer);
+      case MessageType.CREATE_GROUP -> parseCreateGroupMessage(buffer);
+      case MessageType.JOIN_TO_GROUP -> parseJoinToGroupMessage(buffer);
+      case MessageType.SNAKE_GAME_LIST -> parseSnakeGameListMessage(buffer);
       default -> throw new IllegalStateException("Unexpected value: " + type);
     };
+  }
+
+  private static SnakeGameListMessage parseSnakeGameListMessage(
+      ByteBuffer buffer) {
+    int size = buffer.getInt();
+    var list = new ArrayList<SnakeGameListMessage.GameInfo>();
+    for (int i = 0; i < size; i++) {
+      list.add(
+          new SnakeGameListMessage.GameInfo(buffer.getInt(), buffer.getInt(),
+                                            buffer.getInt()));
+    }
+    return new SnakeGameListMessage(list);
+  }
+
+  private static JoinToGroupMessage parseJoinToGroupMessage(ByteBuffer buffer) {
+    int groupId = buffer.getInt();
+    int userId = buffer.getInt();
+    return new JoinToGroupMessage(groupId, userId);
+  }
+
+  private static CreateGroupMessage parseCreateGroupMessage(ByteBuffer buffer) {
+    int length = buffer.getInt();
+    byte[] bytes = new byte[length];
+    buffer.get(bytes);
+    String groupName = new String(bytes, StandardCharsets.UTF_8);
+    return new CreateGroupMessage(groupName);
   }
 
   private static FileMessage parseFileMessage(ByteBuffer buffer) {
