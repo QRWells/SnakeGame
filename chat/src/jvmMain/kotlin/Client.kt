@@ -1,8 +1,8 @@
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import wang.qrwells.message.AbstractMessage
-import wang.qrwells.net.MessageHandler
-import wang.qrwells.net.tcp.TCPClient
+import wang.qrwells.net.client.MessageHandler
+import wang.qrwells.net.client.tcp.TCPClient
 
 object Client {
   private val logger: Logger = LoggerFactory.getLogger(this.javaClass)

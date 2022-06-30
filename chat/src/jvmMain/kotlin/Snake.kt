@@ -29,12 +29,7 @@ class SnakeGame {
   }
 
   enum class Key(val code: Long) {
-    None(0L),
-    Esc(116500987904L),
-    Up(163745628160L),
-    Right(168040595456L),
-    Down(172335562752L),
-    Left(159450660864L);
+    None(0L), Esc(116500987904L), Up(163745628160L), Right(168040595456L), Down(172335562752L), Left(159450660864L);
 
     companion object {
       fun of(code: Long) = values().firstOrNull { it.code == code } ?: None
@@ -68,14 +63,10 @@ class SnakeGame {
   private fun handleInput() = synchronized(this) {
     if (lastKey != Key.None) {
       when (lastKey) {
-        Key.Up -> if (snake.direction != Direction.Down) snake.direction =
-          Direction.Up
-        Key.Right -> if (snake.direction != Direction.Left) snake.direction =
-          Direction.Right
-        Key.Down -> if (snake.direction != Direction.Up) snake.direction =
-          Direction.Down
-        Key.Left -> if (snake.direction != Direction.Right) snake.direction =
-          Direction.Left
+        Key.Up -> if (snake.direction != Direction.Down) snake.direction = Direction.Up
+        Key.Right -> if (snake.direction != Direction.Left) snake.direction = Direction.Right
+        Key.Down -> if (snake.direction != Direction.Up) snake.direction = Direction.Down
+        Key.Left -> if (snake.direction != Direction.Right) snake.direction = Direction.Left
         else -> error("don't know how to handle $lastKey")
       }
       lastKey = Key.None
@@ -108,10 +99,7 @@ class SnakeGame {
 class SnakeData(x: Int, y: Int) {
 
   enum class Direction(val x: Int, val y: Int) {
-    None(0, 0), Up(0, -1), Right(
-      1, 0
-    ),
-    Down(0, 1), Left(-1, 0)
+    None(0, 0), Up(0, -1), Right(1, 0), Down(0, 1), Left(-1, 0)
   }
 
   val head = SnakeHead(x, y)
@@ -138,11 +126,10 @@ class SnakeData(x: Int, y: Int) {
     }
   }
 
-  private fun handleCollision() =
-    tiles.firstOrNull { (it.x == px) && (it.y == py) }?.let {
-      direction = Direction.None
-      tailLength = SnakeGame.minimumTailLength
-    }
+  private fun handleCollision() = tiles.firstOrNull { (it.x == px) && (it.y == py) }?.let {
+    direction = Direction.None
+    tailLength = SnakeGame.minimumTailLength
+  }
 
   private fun updateTiles() {
     tiles += SnakeTileData(head.x, head.y)
@@ -165,23 +152,18 @@ class AppleData(x: Int, y: Int) : GameObject(x, y)
 
 @Composable
 fun SnakeTile(
-  snakeTileData: GameObject,
-  tileSize: Pair<Dp, Dp> = Pair(20.dp, 20.dp),
-  color: Color = Color.Green
+  snakeTileData: GameObject, tileSize: Pair<Dp, Dp> = Pair(20.dp, 20.dp), color: Color = Color.Green
 ) = Box(
   Modifier.offset(
     tileSize.first * snakeTileData.x, tileSize.second * snakeTileData.y
-  ).size(width = tileSize.first - 2.dp, height = tileSize.second - 2.dp)
-    .background(color)
+  ).size(width = tileSize.first - 2.dp, height = tileSize.second - 2.dp).background(color)
 )
 
 @Composable
-fun Apple(appleData: AppleData, tileSize: Pair<Dp, Dp> = Pair(20.dp, 20.dp)) =
-  Box(
-    Modifier.offset(tileSize.first * appleData.x, tileSize.second * appleData.y)
-      .size(width = tileSize.first - 2.dp, height = tileSize.second - 2.dp)
-      .background(Color.Red)
-  )
+fun Apple(appleData: AppleData, tileSize: Pair<Dp, Dp> = Pair(20.dp, 20.dp)) = Box(
+  Modifier.offset(tileSize.first * appleData.x, tileSize.second * appleData.y)
+    .size(width = tileSize.first - 2.dp, height = tileSize.second - 2.dp).background(Color.Red)
+)
 
 fun main() = application {
 
@@ -219,15 +201,13 @@ fun main() = application {
             modifier = Modifier.padding(8.dp)
           )
         }
-        Box(modifier = Modifier.fillMaxSize().background(Color.Black)
-          .clipToBounds().onSizeChanged {
-            with(density) {
-              tileSize = Pair(
-                it.width.toDp() / SnakeGame.areaSize,
-                it.height.toDp() / SnakeGame.areaSize
-              )
-            }
-          }) {
+        Box(modifier = Modifier.fillMaxSize().background(Color.Black).clipToBounds().onSizeChanged {
+          with(density) {
+            tileSize = Pair(
+              it.width.toDp() / SnakeGame.areaSize, it.height.toDp() / SnakeGame.areaSize
+            )
+          }
+        }) {
           game.gameObjects.forEach {
             when (it) {
               is AppleData -> Apple(it, tileSize)

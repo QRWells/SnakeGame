@@ -2,7 +2,10 @@ package view
 
 import Settings
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.material.Slider
+import androidx.compose.material.Switch
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier

@@ -18,7 +18,6 @@ object DAOImpl : DAO {
       }
     }
     val db = Database.connect("jdbc:sqlite:data.db", "org.sqlite.JDBC")
-
     transaction(db) {
       addLogger(StdOutSqlLogger)
       if (!SchemaUtils.checkCycle(HistoryTable)) {

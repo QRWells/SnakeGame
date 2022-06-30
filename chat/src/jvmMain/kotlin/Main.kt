@@ -24,7 +24,7 @@ import wang.qrwells.message.impl.LogoutMessage
 
 @Composable
 @Preview
-fun App(onTitleChange: (String) -> Unit) {
+fun App(onKey: () -> Unit, onTitleChange: (String) -> Unit) {
   val loginViewModel = LoginViewModel()
   val mainScreenViewModel = MainScreenViewModel()
   val loggedIn = remember { mutableStateOf(false) }
@@ -46,7 +46,7 @@ fun App(onTitleChange: (String) -> Unit) {
         Client.clearHandler()
       })
     } else {
-      onTitleChange("Chat")
+      onTitleChange(AppContext.user.name)
       MainScreen(mainScreenViewModel)
     }
   }
@@ -66,7 +66,13 @@ fun main() = application {
     onCloseRequest = ::exitApplication,
     title = "Snake",
     undecorated = true,
-    state = state
+    state = state,
+    onPreviewKeyEvent = { e ->
+      AppContext.keyEventHandlers.forEach {
+        it.invoke(e)
+      }
+      false
+    }
   ) {
     MaterialTheme(colors = colors.value) {
       Column(Modifier.fillMaxSize()) {
@@ -74,8 +80,6 @@ fun main() = application {
           TitleBar(
             onMinClick = { state.isMinimized = !state.isMinimized },
             onCloseClick = {
-              // todo : save state
-
               // send logout message if user has logged in
               if (AppContext.user.id > 0) {
                 Client.send(LogoutMessage(AppContext.user.id))
@@ -87,7 +91,7 @@ fun main() = application {
             }, title.value
           )
         }
-        App { title.value = it }
+        App(onKey = {}) { title.value = it }
       }
     }
   }

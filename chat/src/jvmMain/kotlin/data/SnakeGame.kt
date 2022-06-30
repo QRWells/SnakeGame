@@ -1,18 +1,16 @@
 package data
 
 import Client
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import wang.qrwells.message.impl.SnakeGameMessage
 import wang.qrwells.message.impl.SnakeGameMessage.Direction
-import wang.qrwells.net.Connection
 import kotlin.random.Random
 
 sealed class GameObject(x: Int, y: Int, color: Color) {
@@ -23,23 +21,22 @@ sealed class GameObject(x: Int, y: Int, color: Color) {
 
 class SnakeHeadData(x: Int, y: Int, color: Color) : GameObject(x, y, color)
 class SnakeBodyData(x: Int, y: Int, color: Color) : GameObject(x, y, color)
-class FoodData(x: Int, y: Int) : GameObject(x, y, Color.Magenta)
+class FoodData(x: Int, y: Int) : GameObject(x, y, Color.Blue)
 
 class Snake(
-  x: Int,
-  y: Int,
-  private val color: Color,
-  private val wall: Boolean = false
+  x: Int, y: Int, private val color: Color
 ) {
-  val score = 0
+  var score = 0
   var head = SnakeHeadData(x, y, color)
-  var body = mutableListOf(SnakeBodyData(x, y, color))
-  var direction = Direction.NONE
+  var body = mutableStateListOf<SnakeBodyData>()
+  var direction = Direction.RIGHT
   var length = SnakeGame.startLength
   var px = x
   var py = y
+  var dead = false
 
   fun move() {
+    if (dead) return
     when (direction) {
       Direction.UP -> py--
       Direction.DOWN -> py++
@@ -47,13 +44,11 @@ class Snake(
       Direction.RIGHT -> px++
       else -> {}
     }
-    if (wall) {
-      when {
-        (px < 0) -> px = SnakeGame.areaSize - 1
-        (px >= SnakeGame.areaSize) -> px = 0
-        (py < 0) -> py = SnakeGame.areaSize - 1
-        (py >= SnakeGame.areaSize) -> py = 0
-      }
+    when {
+      (px < 0) -> px = SnakeGame.areaSize - 1
+      (px >= SnakeGame.areaSize) -> px = 0
+      (py < 0) -> py = SnakeGame.areaSize - 1
+      (py >= SnakeGame.areaSize) -> py = 0
     }
   }
 
@@ -67,39 +62,39 @@ class Snake(
   }
 }
 
-class SnakeGame(
-  width: Int,
-  height: Int,
-  private val sessionId : Int,
-  private val id: Int,
-  private val self: Snake,
-  private val other: Map<Int, Snake>,
-  val speed: Int = 10,
-) {
+class SnakeGame {
+  var sessionId: Int = -1
+  var id: Int = -1
+  var self: Snake = Snake(x = 0, y = 0, color = Color.Red)
+  var other = mutableStateMapOf<Int, Snake>()
+  var speed: Int = 10
+
+  private val logger: Logger = LoggerFactory.getLogger(SnakeGame::class.java)
+
   companion object {
     const val startLength = 5
     const val areaSize = 20
   }
 
   enum class Key(val code: Long) {
-    None(0L),
-    Esc(116500987904L),
-    Up(163745628160L),
-    Right(168040595456L),
-    Down(172335562752L),
-    Left(159450660864L);
+    None(0L), Esc(116500987904L), Up(163745628160L), Right(168040595456L), Down(172335562752L), Left(159450660864L);
 
     companion object {
       fun of(code: Long) = values().firstOrNull { it.code == code } ?: None
     }
   }
 
-  val gameObjects = mutableStateListOf<GameObject>()
-  private val food = FoodData(areaSize * 3 / 4, areaSize * 3 / 4)
-  private var gameOver = false
+  var gameObjects = mutableStateListOf<GameObject>()
+  private val food = FoodData(5, 5)
+  private var gameOver = true
   private var lastKey = Key.None
 
+  private fun start() {
+    gameOver = false
+  }
+
   fun update() {
+    if (gameOver) return
     handleInput()
 
     self.move()
@@ -122,32 +117,53 @@ class SnakeGame(
   }
 
   private fun calcScore() {
-    // todo: calc score
+    self.score = self.body.size - startLength
+    for (snake in other.values) {
+      snake.score = snake.body.size - startLength
+    }
   }
 
   private fun handleCollision() {
-    self.body.firstOrNull { it.x == self.head.x && it.y == self.head.y }?.let {
-      // todo: fire dead event
+    self.body.firstOrNull { it.x == self.px && it.y == self.py }?.let {
+      fireDeadEvent()
     }
     other.forEach { (_, snake) ->
       snake.body.firstOrNull {
-        it.x == self.head.x && it.y == self.head.y
+        it.x == self.px && it.y == self.py
       }?.let {
-        // todo: fire dead event
+        fireDeadEvent()
       }
-      if (snake.head.x == self.head.x && snake.head.y == self.head.y) {
-        // todo: fire dead event
+      if (snake.head.x == self.px && snake.head.y == self.py) {
+        fireDeadEvent()
       }
     }
+  }
+
+  private fun fireDeadEvent() {
+    self.direction = Direction.NONE
+    self.dead = true
+    Client.send(
+      SnakeGameMessage(
+        System.currentTimeMillis(),
+        sessionId,
+        id,
+        SnakeGameMessage.Action.DIE,
+        Direction.NONE,
+        0,
+        0
+      )
+    )
   }
 
   private fun updateGameObjects() {
     gameObjects.clear()
     gameObjects += food
-    gameObjects.add(self.head)
+
+    gameObjects += self.head
     gameObjects.addAll(self.body)
+
     other.forEach { (_, snake) ->
-      gameObjects.add(snake.head)
+      gameObjects += snake.head
       gameObjects.addAll(snake.body)
     }
   }
@@ -157,11 +173,11 @@ class SnakeGame(
       self.length++
       food.x = Random.nextInt(areaSize)
       food.y = Random.nextInt(areaSize)
-      // send eaten food message with new food position
+      //send eaten food message with new food position
       Client.send(
         SnakeGameMessage.makeEatMessage(
-          id,
           sessionId,
+          id,
           food.x,
           food.y
         )
@@ -172,16 +188,13 @@ class SnakeGame(
   private fun handleInput() = synchronized(this) {
     if (lastKey != Key.None) {
       when (lastKey) {
-        Key.Up -> if (self.direction != Direction.DOWN) self.direction =
-          Direction.UP
-        Key.Right -> if (self.direction != Direction.LEFT) self.direction =
-          Direction.RIGHT
-        Key.Down -> if (self.direction != Direction.UP) self.direction =
-          Direction.DOWN
-        Key.Left -> if (self.direction != Direction.RIGHT) self.direction =
-          Direction.LEFT
+        Key.Up -> if (self.direction != Direction.DOWN) self.direction = Direction.UP
+        Key.Right -> if (self.direction != Direction.LEFT) self.direction = Direction.RIGHT
+        Key.Down -> if (self.direction != Direction.UP) self.direction = Direction.DOWN
+        Key.Left -> if (self.direction != Direction.RIGHT) self.direction = Direction.LEFT
         else -> error("don't know how to handle $lastKey")
       }
+      Client.send(SnakeGameMessage.makeMoveMessage(sessionId, id, self.direction))
       lastKey = Key.None
     }
   }
@@ -194,36 +207,41 @@ class SnakeGame(
     }
   }
 
-  fun handleMessage(connection: Connection, message: SnakeGameMessage) {
-    if (!other.containsKey(message.playerId))
-      return
-
+  fun handleMessage(message: SnakeGameMessage) {
+    logger.info("received message with id: ${message.playerId} with action ${message.action.name} direction ${message.direction.name}")
     when (message.action) {
       SnakeGameMessage.Action.MOVE -> {
-        message.playerId.let { playerId ->
-          other[playerId]?.direction = message.direction
-        }
+        other[message.playerId]!!.direction = message.direction
       }
       SnakeGameMessage.Action.DIE -> {
-        message.playerId.let { playerId ->
-          other[playerId]?.direction = Direction.NONE
-        }
+        other[message.playerId]!!.direction = Direction.NONE
+        other[message.playerId]!!.dead = true
       }
       SnakeGameMessage.Action.EAT -> {
-        message.playerId.let { playerId ->
-          ++other[playerId]!!.length
-        }
+        other[message.playerId]!!.length += 1
         food.x = message.x
         food.y = message.y
       }
-      SnakeGameMessage.Action.START -> {
-        // start the game
-      }
       SnakeGameMessage.Action.STOP -> {
         // stop the game
+        gameOver = true
+      }
+      SnakeGameMessage.Action.NEW -> {
+        food.x = message.x
+        food.y = message.y
+        start()
+      }
+      SnakeGameMessage.Action.JOIN -> {
+        if (message.playerId == id) {
+          self = Snake(message.x, message.y, Color.Green)
+          self.direction = message.direction
+        } else {
+          other[message.playerId] = Snake(message.x, message.y, Color.Yellow)
+          other[message.playerId]!!.direction = message.direction
+        }
       }
       else -> {
-        TODO()
+
       }
     }
   }

@@ -21,10 +21,10 @@ public class IdRequestHandler extends SimpleChannelReadHandler<IdRequestMessage>
   public void read0(MessageHandlerContext ctx, IdRequestMessage msg) throws Throwable {
     if (msg.isGroup()) {
       var group = DBClient.INSTANCE.getGroupById(msg.getId());
-      if (group == null) {
-        // create a new group
-      } else {
+      if (group != null) {
         ctx.channel().write(new ResponseMessage(ResponseMessage.Status.OK, group.getName()));
+      } else {
+        ctx.channel().write(new ResponseMessage(ResponseMessage.Status.ERROR, "group not found"));
       }
     } else {
       var user = DBClient.INSTANCE.getUserById(msg.getId());
