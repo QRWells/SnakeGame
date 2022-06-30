@@ -8,8 +8,7 @@ import wang.qrwells.net.server.bytemsg.msg.impl.UnpoolByteMsg;
 import java.nio.ByteBuffer;
 
 public class UnpooledByteMsgAllocator implements ByteMsgAllocator {
-  private static final UnpooledByteMsgAllocator unpooledByteMsgAllocator =
-      new UnpooledByteMsgAllocator();
+  private static final UnpooledByteMsgAllocator unpooledByteMsgAllocator = new UnpooledByteMsgAllocator();
 
   public static UnpooledByteMsgAllocator get() {
     return unpooledByteMsgAllocator;

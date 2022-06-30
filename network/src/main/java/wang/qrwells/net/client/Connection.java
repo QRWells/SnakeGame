@@ -10,24 +10,22 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Connection {
   protected static final Logger log = LoggerFactory.getLogger(Connection.class);
-  protected final ConcurrentHashMap<String, MessageHandler> messageHandlers =
-      new ConcurrentHashMap<>();
-  protected BlockingQueue<AbstractMessage> messageQueue =
-      new ArrayBlockingQueue<>(100);
+  protected final ConcurrentHashMap<String, MessageHandler> messageHandlers = new ConcurrentHashMap<>();
+  protected BlockingQueue<AbstractMessage> messageQueue = new ArrayBlockingQueue<>(100);
   private boolean isConnected = true;
 
   public final void addMessageHandler(String name, MessageHandler handler) {
-    log.info("Adding message handler.");
+    log.debug("Adding message handler {}.", name);
     messageHandlers.put(name, handler);
   }
 
   public final void removeMessageHandler(String name) {
-    log.info("Removing message handler.");
+    log.debug("Removing message handler {}.", name);
     messageHandlers.remove(name);
   }
 
   public final void clearMessageHandlers() {
-    log.info("Clearing message handlers.");
+    log.debug("Clearing message handlers.");
     messageHandlers.clear();
   }
 
@@ -40,9 +38,7 @@ public abstract class Connection {
     try {
       messageQueue.put(message);
     } catch (InterruptedException e) {
-      log.warn(
-          "send() was interrupted while waiting for messageQueue to clear" +
-          " some space", e);
+      log.warn("send() was interrupted while waiting for messageQueue to clear" + " some space", e);
     }
   }
 
@@ -53,10 +49,7 @@ public abstract class Connection {
   public void notifyMessageReceived(AbstractMessage message) {
     // exceptions here should only occur if they were thrown at user level
     // during handling messages via onReceive()
-    log.info(
-        "Received message with length: " + message.getLength() + " and type: " +
-        message.getClass()
-               .getName());
+    log.debug("Received message with length: " + message.getLength() + " and type: " + message.getClass().getName());
     try {
       if (messageHandlers.size() != 0)
         messageHandlers.forEach((n, h) -> h.onReceive(this, message));

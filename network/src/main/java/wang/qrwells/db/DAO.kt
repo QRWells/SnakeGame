@@ -1,4 +1,4 @@
-package wang.qrwells.snake.db
+package wang.qrwells.db
 
 import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass

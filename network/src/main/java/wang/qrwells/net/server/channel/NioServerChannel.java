@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.channel;
 
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wang.qrwells.net.server.handler.ChannelReadHandler;
@@ -15,8 +14,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
 public class NioServerChannel extends Channel {
-  private static final Logger logger = LoggerFactory.getLogger(
-      NioServerChannel.class);
+  private static final Logger logger = LoggerFactory.getLogger(NioServerChannel.class);
 
   public NioServerChannel(NioEventLoop nioEventLoop) throws IOException {
     super(null, nioEventLoop, ServerSocketChannel.open());
@@ -53,14 +51,12 @@ public class NioServerChannel extends Channel {
   }
 
   public static class AcceptorHandler implements ChannelReadHandler {
-    private static final Logger logger = LoggerFactory.getLogger(
-        AcceptorHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(AcceptorHandler.class);
     private final NioEventLoopGroup worker;
     private final NioServerChannel parentChannel;
     private final ChannelInitHandler channelInitHandler;
 
-    public AcceptorHandler(NioEventLoopGroup worker,
-                           NioServerChannel parentChannel,
+    public AcceptorHandler(NioEventLoopGroup worker, NioServerChannel parentChannel,
                            ChannelInitHandler channelInitHandler) {
       this.worker = worker;
       this.parentChannel = parentChannel;
@@ -69,16 +65,13 @@ public class NioServerChannel extends Channel {
 
     @Override
     public void read(MessageHandlerContext mhc, Object msg) throws Throwable {
-      logger.info("Connected from {}",
-                  ((SocketChannel) msg).getRemoteAddress());
+      logger.info("Connected from {}", ((SocketChannel) msg).getRemoteAddress());
       SocketChannel socketChannel = (SocketChannel) msg;
       socketChannel.configureBlocking(false);
       socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 //      socketChannel.setOption(StandardSocketOptions.TCP_NODELAY, true);
       NioEventLoop selectedEventLoop = worker.getEventLoop();
-      NioByteChannel channel = new NioByteChannel(parentChannel,
-                                                  selectedEventLoop,
-                                                  socketChannel,
+      NioByteChannel channel = new NioByteChannel(parentChannel, selectedEventLoop, socketChannel,
                                                   SelectionKey.OP_READ);
       channel.register();
       channel.pipeline.addLast(channelInitHandler);

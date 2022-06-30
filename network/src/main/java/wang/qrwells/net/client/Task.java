@@ -16,8 +16,7 @@ public abstract class Task<T> {
 
   private Consumer<T> successAction = (result) -> {
   };
-  private Consumer<Throwable> failAction = (e) -> log.warn(
-      getName() + " failed", e);
+  private Consumer<Throwable> failAction = (e) -> log.warn(getName() + " failed", e);
   private Runnable cancelAction = () -> {
 
   };
@@ -148,8 +147,7 @@ public abstract class Task<T> {
    * @return IO task
    */
   public final <R> Task<R> then(Function<T, Task<R>> mapper) {
-    return of(name, () -> mapper.apply(onExecute())
-                                .onExecute());
+    return of(name, () -> mapper.apply(onExecute()).onExecute());
   }
 
   /* Static convenience methods */

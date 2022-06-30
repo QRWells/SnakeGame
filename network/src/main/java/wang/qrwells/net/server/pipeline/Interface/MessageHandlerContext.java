@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.pipeline.Interface;
 
-
 import wang.qrwells.net.server.channel.Channel;
 import wang.qrwells.net.server.pipeline.Pipeline;
 

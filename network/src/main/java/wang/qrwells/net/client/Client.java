@@ -31,8 +31,8 @@ public abstract class Client {
   }
 
   protected final void openTCPConnection(Socket socket) throws Exception {
-    log.info(getClass().getSimpleName() + " opening new connection from " +
-             socket.getInetAddress() + ":" + socket.getPort());
+    log.info(getClass().getSimpleName() + " opening new connection from " + socket.getInetAddress() + ":" +
+             socket.getPort());
 
     socket.setTcpNoDelay(true);
     socket.setKeepAlive(true);
@@ -51,7 +51,6 @@ public abstract class Client {
 
         while (connection.isConnected()) {
           var message = connection.messageQueue.take();
-
           writer.write(message);
         }
       } catch (Exception e) {
@@ -66,10 +65,7 @@ public abstract class Client {
         while (connection.isConnected()) {
           try {
             var message = reader.read();
-            log.info(getClass().getSimpleName() + " received message with " +
-                     "length: " + message.length);
             var buffer = ByteBuffer.wrap(message);
-            log.info("pos: " + buffer.position() + " limit: " + buffer.limit());
             connection.notifyMessageReceived(MessageUtil.parseMessage(buffer));
 
           } catch (EOFException e) {
@@ -78,8 +74,7 @@ public abstract class Client {
             connection.terminate();
           } catch (SocketException e) {
             if (!connection.isClosedLocally()) {
-              log.info("Connection was unexpectedly disconnected: " +
-                       e.getMessage());
+              log.info("Connection was unexpectedly disconnected: " + e.getMessage());
               connection.terminate();
             }
           } catch (Exception e) {
@@ -109,13 +104,12 @@ public abstract class Client {
         while (connection.isConnected()) {
           var message = connection.messageQueue.take();
 
-          var bytes = Writer.getUDPWriter()
-                            .write(message);
+          var bytes = Writer.getUDPWriter().write(message);
 
           connection.sendUDP(bytes);
         }
       } catch (Exception e) {
-        log.warn( sendThreadName + " crashed", e);
+        log.warn(sendThreadName + " crashed", e);
       }
     }).start();
 
@@ -125,15 +119,14 @@ public abstract class Client {
         var reader = Reader.getUDPReader();
 
         while (connection.isConnected()) {
-          var bytes = connection.getRecvQueue()
-                                .take();
+          var bytes = connection.getRecvQueue().take();
 
           var message = reader.read(bytes);
 
           connection.notifyMessageReceived(message);
         }
       } catch (Exception e) {
-        log.warn( recvThreadName + " crashed", e);
+        log.warn(recvThreadName + " crashed", e);
       }
     }).start();
   }

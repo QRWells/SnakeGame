@@ -13,12 +13,10 @@ import java.util.Arrays;
 
 public class UDPClient extends Client {
   private static final byte[] MSG_OPEN = new byte[]{
-      -2, -1, 0, 70, 0, 88, 0, 71, 0, 76, 0, 95, 0, 72, 0, 69, 0, 76, 0, 76, 0,
-      79
+      -2, -1, 0, 70, 0, 88, 0, 71, 0, 76, 0, 95, 0, 72, 0, 69, 0, 76, 0, 76, 0, 79
   };
   private static final byte[] MSG_CLOSE = new byte[]{
-      -2, -1, 0, 70, 0, 88, 0, 71, 0, 76, 0, 95, 0, 66, 0, 89, 0, 69, 0, 33, 0,
-      33
+      -2, -1, 0, 70, 0, 88, 0, 71, 0, 76, 0, 95, 0, 66, 0, 89, 0, 69, 0, 33, 0, 33
   };
   private final String ip;
   private final int port;
@@ -50,9 +48,7 @@ public class UDPClient extends Client {
         Arrays.fill(buffer, (byte) 0);
         var packet = new DatagramPacket(buffer, buffer.length);
         _socket.receive(packet);
-        var isClose = Arrays.equals(
-            Arrays.copyOfRange(packet.getData(), 0, MSG_CLOSE.length),
-            MSG_CLOSE);
+        var isClose = Arrays.equals(Arrays.copyOfRange(packet.getData(), 0, MSG_CLOSE.length), MSG_CLOSE);
         if (isClose) {
           log.info("close connection");
           isStopped = true;

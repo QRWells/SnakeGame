@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.bytemsg.msg.impl;
 
-
 import wang.qrwells.net.server.bytemsg.allocator.ByteMsgAllocator;
 import wang.qrwells.net.server.bytemsg.allocator.impl.UnpooledByteMsgAllocator;
 import wang.qrwells.net.server.bytemsg.msg.AbstractByteMsg;
@@ -12,8 +11,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-public class UnpoolByteMsg extends AbstractByteMsg implements
-    ExtendableByteMsg {
+public class UnpoolByteMsg extends AbstractByteMsg implements ExtendableByteMsg {
   protected static final ByteBuffer EMPTY_BYTEBUFFER = ByteBuffer.allocate(0);
   private int resizeCount;
 
@@ -48,10 +46,7 @@ public class UnpoolByteMsg extends AbstractByteMsg implements
   public void resize() {
     int resize = 128 * resizeCount++;
     internByteBuff.flip();
-    internByteBuff = UnpooledByteMsgAllocator.get()
-                                             .allocate(maxCapacity() + resize)
-                                             .nioBuffer()
-                                             .put(internByteBuff);
+    internByteBuff = UnpooledByteMsgAllocator.get().allocate(maxCapacity() + resize).nioBuffer().put(internByteBuff);
     maxCapacity += resize;
   }
 

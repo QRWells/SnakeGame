@@ -16,8 +16,8 @@ public class SnakeGameMessage extends AbstractMessage {
   private final int x;
   private final int y;
 
-  public SnakeGameMessage(long timeStamp, int sessionId, int playerId,
-                          Action action, Direction direction, int x, int y) {
+  public SnakeGameMessage(long timeStamp, int sessionId, int playerId, Action action, Direction direction, int x,
+                          int y) {
     this.timeStamp = timeStamp;
     this.sessionId = sessionId;
     this.playerId = playerId;
@@ -27,10 +27,13 @@ public class SnakeGameMessage extends AbstractMessage {
     this.y = y;
   }
 
-  public static SnakeGameMessage makeEatMessage(int id, int sessionId, int x,
-                                                int y) {
-    return new SnakeGameMessage(System.currentTimeMillis(), sessionId, id,
-                                Action.EAT, Direction.NONE, x, y);
+  public static SnakeGameMessage makeEatMessage(int sessionId, int id, int x, int y) {
+    return new SnakeGameMessage(System.currentTimeMillis(), sessionId, id, Action.EAT, Direction.NONE, x, y);
+  }
+
+
+  public static SnakeGameMessage makeMoveMessage(int sessionId, int id, Direction direction) {
+    return new SnakeGameMessage(System.currentTimeMillis(), sessionId, id, Action.MOVE, direction, 0, 0);
   }
 
   public int getX() {
@@ -59,7 +62,7 @@ public class SnakeGameMessage extends AbstractMessage {
 
   @Override
   public int getLength() {
-    return HEADER_LENGTH + Long.BYTES + Integer.BYTES * 3;
+    return HEADER_LENGTH + Long.BYTES + Integer.BYTES * 6;
   }
 
   @Override
@@ -71,16 +74,13 @@ public class SnakeGameMessage extends AbstractMessage {
   public byte[] getBytes() {
     var result = ByteBuffer.allocate(getLength());
     writeHeader(result);
-    result.putLong(timeStamp)
-          .putInt(sessionId)
-          .putInt(playerId)
-          .putInt(action.getOrdinal());
-    if (action == Action.EAT) {
-      result.putShort((short) x)
-            .putShort((short) y);
-    } else {
-      result.putInt(direction.getOrdinal());
-    }
+    result.putLong(timeStamp);
+    result.putInt(sessionId);
+    result.putInt(playerId);
+    result.putInt(action.getOrdinal());
+    result.putInt(direction.getOrdinal());
+    result.putInt(x);
+    result.putInt(y);
     return result.array();
   }
 
@@ -89,7 +89,7 @@ public class SnakeGameMessage extends AbstractMessage {
   }
 
   public enum Action {
-    MOVE(0), EAT(1), DIE(2), START(3), JOIN(4), STOP(5), QUERY(6);
+    MOVE(0), EAT(1), DIE(2), NEW(3), JOIN(4), STOP(5), QUERY(6);
     private static final Map<Integer, Action> ordinalToAction = new HashMap<>();
 
     static {
@@ -116,8 +116,7 @@ public class SnakeGameMessage extends AbstractMessage {
   public enum Direction {
     NONE(-1), UP(0), DOWN(1), LEFT(2), RIGHT(3);
 
-    private static final Map<Integer, Direction> ordinalToDirection =
-        new HashMap<>();
+    private static final Map<Integer, Direction> ordinalToDirection = new HashMap<>();
 
     static {
       for (Direction direction : Direction.values()) {

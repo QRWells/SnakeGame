@@ -45,11 +45,7 @@ public abstract class AbstractByteMsg implements ByteMsg {
     if (readCheckBound(length)) {
       byte[] bytes = new byte[length];
       int old = internByteBuff.position();
-      internByteBuff.flip()
-                    .position(readIndex)
-                    .get(bytes)
-                    .compact()
-                    .position(old);
+      internByteBuff.flip().position(readIndex).get(bytes).compact().position(old);
       readIndex += length;
       return bytes;
     }

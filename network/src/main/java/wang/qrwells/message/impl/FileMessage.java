@@ -15,8 +15,7 @@ public class FileMessage extends AbstractMessage {
   private final String fileName;
   private final byte[] fileData;
 
-  public FileMessage(int senderId, int receiverId, String fileName,
-                     byte[] fileData) {
+  public FileMessage(int senderId, int receiverId, String fileName, byte[] fileData) {
     this.senderId = senderId;
     this.receiverId = receiverId;
     this.fileName = fileName;
@@ -33,8 +32,7 @@ public class FileMessage extends AbstractMessage {
 
   @Override
   public int getLength() {
-    return HEADER_LENGTH + Integer.BYTES * 2 + fileName.getBytes(
-        StandardCharsets.UTF_8).length + fileData.length;
+    return HEADER_LENGTH + Integer.BYTES * 2 + fileName.getBytes(StandardCharsets.UTF_8).length + fileData.length;
   }
 
   @Override
@@ -46,12 +44,8 @@ public class FileMessage extends AbstractMessage {
   public byte[] getBytes() {
     var buf = ByteBuffer.allocate(getLength());
     writeHeader(buf);
-    buf.putInt(senderId)
-       .putInt(receiverId)
-       .putInt(fileName.getBytes(StandardCharsets.UTF_8).length)
-       .putInt(fileData.length)
-       .put(fileName.getBytes(StandardCharsets.UTF_8))
-       .put(fileData);
+    buf.putInt(senderId).putInt(receiverId).putInt(fileName.getBytes(StandardCharsets.UTF_8).length).putInt(
+        fileData.length).put(fileName.getBytes(StandardCharsets.UTF_8)).put(fileData);
     return buf.array();
   }
 }

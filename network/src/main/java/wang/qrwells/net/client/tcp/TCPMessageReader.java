@@ -16,8 +16,7 @@ public class TCPMessageReader {
     var buffer = new byte[len];
     var bytesReadSoFar = 0;
     while (bytesReadSoFar != len) {
-      var bytesReadNow = stream.read(buffer, bytesReadSoFar,
-                                     len - bytesReadSoFar);
+      var bytesReadNow = stream.read(buffer, bytesReadSoFar, len - bytesReadSoFar);
       bytesReadSoFar += bytesReadNow;
     }
 

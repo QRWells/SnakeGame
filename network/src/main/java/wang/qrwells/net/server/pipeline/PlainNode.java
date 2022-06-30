@@ -6,7 +6,6 @@ import wang.qrwells.net.server.handler.ChannelWriteHandler;
 import wang.qrwells.net.server.pipeline.Interface.HandlerNode;
 
 public class PlainNode extends HandlerNode {
-
   private final boolean read;
   private final boolean write;
 

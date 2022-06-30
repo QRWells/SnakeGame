@@ -9,10 +9,7 @@ public class MessageToByteEncoder implements ChannelWriteHandler {
   @Override
   public void write(MessageHandlerContext mhc, Object msg) throws Throwable {
     var m = (AbstractMessage) msg;
-    var bm = mhc.channel()
-                .eventLoop()
-                .getByteMsgAllocator()
-                .allocate(m.getLength());
+    var bm = mhc.channel().eventLoop().getByteMsgAllocator().allocate(m.getLength());
     bm.writeInt(m.getLength());
     bm.writeBytes(m.getBytes());
     mhc.nextWrite(bm);

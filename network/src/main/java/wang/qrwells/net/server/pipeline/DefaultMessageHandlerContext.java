@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.pipeline;
 
-
 import wang.qrwells.net.server.channel.Channel;
 import wang.qrwells.net.server.handler.ChannelReadHandler;
 import wang.qrwells.net.server.handler.ChannelWriteHandler;
@@ -14,15 +13,11 @@ public class DefaultMessageHandlerContext implements MessageHandlerContext {
   private final Channel channel;
 
   private final Pipeline pipeline;
-
+  private final TailNode tail;
+  private final HeadNode head;
   private HandlerNode now;
 
-  private final TailNode tail;
-
-  private final HeadNode head;
-
-  public DefaultMessageHandlerContext(Channel channel, Pipeline pipeline,
-                                      TailNode tail, HeadNode head) {
+  public DefaultMessageHandlerContext(Channel channel, Pipeline pipeline, TailNode tail, HeadNode head) {
     this.channel = channel;
     this.pipeline = pipeline;
     this.tail = tail;
@@ -138,14 +133,16 @@ public class DefaultMessageHandlerContext implements MessageHandlerContext {
 
   private HandlerNode getNextReadNode() {
     var handlerNode = now.next();
-    while (!handlerNode.isReadHandler()) handlerNode = handlerNode.next();
+    while (!handlerNode.isReadHandler())
+      handlerNode = handlerNode.next();
 
     return handlerNode;
   }
 
   private HandlerNode getNextWriteNode() {
     var handlerNode = now.next();
-    while (!handlerNode.isWriteHandler()) handlerNode = handlerNode.next();
+    while (!handlerNode.isWriteHandler())
+      handlerNode = handlerNode.next();
     return handlerNode;
   }
 

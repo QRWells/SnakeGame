@@ -1,6 +1,5 @@
 package wang.qrwells.message.impl;
 
-
 import wang.qrwells.message.AbstractMessage;
 import wang.qrwells.message.MessageType;
 
@@ -31,8 +30,7 @@ public class ResponseMessage extends AbstractMessage {
 
   @Override
   public int getLength() {
-    return HEADER_LENGTH + Integer.BYTES + (detail != null ? detail.getBytes(
-        StandardCharsets.UTF_8).length : 0);
+    return HEADER_LENGTH + Integer.BYTES * 2 + (detail != null ? detail.getBytes(StandardCharsets.UTF_8).length : 0);
   }
 
   @Override

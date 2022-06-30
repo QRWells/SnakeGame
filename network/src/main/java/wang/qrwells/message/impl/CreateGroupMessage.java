@@ -19,8 +19,7 @@ public class CreateGroupMessage extends AbstractMessage {
 
   @Override
   public int getLength() {
-    return HEADER_LENGTH + Integer.BYTES + groupName.getBytes(
-        StandardCharsets.UTF_8).length;
+    return HEADER_LENGTH + Integer.BYTES + groupName.getBytes(StandardCharsets.UTF_8).length;
   }
 
   @Override

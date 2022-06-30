@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.channel;
 
-
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class NioEventLoopGroup {

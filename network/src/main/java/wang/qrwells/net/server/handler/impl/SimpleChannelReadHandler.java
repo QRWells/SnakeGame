@@ -4,8 +4,7 @@ import wang.qrwells.net.server.handler.ChannelReadHandler;
 import wang.qrwells.net.server.pipeline.Interface.MessageHandlerContext;
 import wang.qrwells.net.server.utils.TypeMatcher;
 
-public abstract class SimpleChannelReadHandler<I> implements
-    ChannelReadHandler {
+public abstract class SimpleChannelReadHandler<I> implements ChannelReadHandler {
   private final TypeMatcher matcher;
 
   protected SimpleChannelReadHandler(Class<? extends I> t) {

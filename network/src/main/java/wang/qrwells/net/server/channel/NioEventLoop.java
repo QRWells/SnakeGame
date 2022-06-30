@@ -28,8 +28,7 @@ public class NioEventLoop extends Thread implements Executor {
       selector = Selector.open();
       isClose = new AtomicBoolean(false);
       workQueue = new ConcurrentLinkedQueue<>();
-      scheduleTasks = new PriorityBlockingQueue<>(64, Comparator.comparingLong(
-          ScheduleTask::getStartTime));
+      scheduleTasks = new PriorityBlockingQueue<>(64, Comparator.comparingLong(ScheduleTask::getStartTime));
       setName("nioEventLoop:" + atomicInteger.getAndIncrement());
       wakeUpFlag = new AtomicBoolean(true);
       byteMsgAllocator = ThreadPoolByteMsgAllocator.DEFAULT_INSTANT;
@@ -43,8 +42,7 @@ public class NioEventLoop extends Thread implements Executor {
     while (!isClose.get()) {
       for (; ; ) {
         try {
-          if (!scheduleTasks.isEmpty() && scheduleTasks.peek().getStartTime() -
-                                          System.currentTimeMillis() <= 5) {
+          if (!scheduleTasks.isEmpty() && scheduleTasks.peek().getStartTime() - System.currentTimeMillis() <= 5) {
             ScheduleTask scheduleTask = scheduleTasks.poll();
             assert scheduleTask != null;
             wakeUpFlag.compareAndSet(true, false);
@@ -76,10 +74,8 @@ public class NioEventLoop extends Thread implements Executor {
     return success;
   }
 
-  public boolean scheduleTask(Runnable runnable, long period,
-                              TimeUnit timeUnit) {
-    ScheduleTask scheduleTask = new ScheduleTask(runnable,
-                                                 timeUnit.toMillis(period));
+  public boolean scheduleTask(Runnable runnable, long period, TimeUnit timeUnit) {
+    ScheduleTask scheduleTask = new ScheduleTask(runnable, timeUnit.toMillis(period));
     boolean offer = scheduleTasks.offer(scheduleTask);
     if (offer && !wakeUpFlag.get())
       wakeUp();
@@ -89,8 +85,7 @@ public class NioEventLoop extends Thread implements Executor {
   private void processKeys() throws IOException {
     wakeUpFlag.compareAndSet(true, false);
     if (!scheduleTasks.isEmpty())
-      selector.select(
-          scheduleTasks.peek().getStartTime() - System.currentTimeMillis());
+      selector.select(scheduleTasks.peek().getStartTime() - System.currentTimeMillis());
     else
       selector.select();
 
@@ -112,13 +107,11 @@ public class NioEventLoop extends Thread implements Executor {
       if ((readyOps & SelectionKey.OP_WRITE) != 0) {
         channel.flush();
       }
-      if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 ||
-          readyOps == 0) {
+      if ((readyOps & (SelectionKey.OP_READ | SelectionKey.OP_ACCEPT)) != 0 || readyOps == 0) {
         channel.read();
       }
       iterator.remove();
     }
-
   }
 
   public void registerInterest(Channel channel, int interestOp) {

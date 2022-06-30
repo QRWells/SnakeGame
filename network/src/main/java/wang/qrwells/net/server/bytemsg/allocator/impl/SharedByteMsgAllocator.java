@@ -13,15 +13,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class SharedByteMsgAllocator implements PoolByteMsgAllocator {
-  public static final SharedByteMsgAllocator DEFAULT_INSTANT =
-      new SharedByteMsgAllocator(4 * 1024, 128);
-  private ByteBuffer rawSpan;
+  public static final SharedByteMsgAllocator DEFAULT_INSTANT = new SharedByteMsgAllocator(4 * 1024, 128);
   private final int poolSize;
   private final int chunkSize;
-  private Queue<FixedPoolByteMsg> waitMsg;
   private final AtomicBoolean isInit;
   private final int maxPoolSize;
   private final AtomicInteger nowSize;
+  private ByteBuffer rawSpan;
+  private Queue<FixedPoolByteMsg> waitMsg;
 
 
   public SharedByteMsgAllocator(int poolSize, int chunkSize) {
@@ -80,8 +79,7 @@ public class SharedByteMsgAllocator implements PoolByteMsgAllocator {
     int posCount = 0;
     rawSpan = ByteBuffer.allocateDirect(poolSize);
     while ((posCount + 1) * chunkSize <= poolSize) {
-      ByteBuffer node = rawSpan.position(posCount * chunkSize).limit(
-          posCount * chunkSize + chunkSize).slice();
+      ByteBuffer node = rawSpan.position(posCount * chunkSize).limit(posCount * chunkSize + chunkSize).slice();
       waitMsg.offer(new FixedPoolByteMsg(node, this));
       posCount++;
     }

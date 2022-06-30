@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.bytemsg.allocator;
 
-
 import wang.qrwells.net.server.bytemsg.msg.ByteMsg;
 
 public interface ByteMsgAllocator {

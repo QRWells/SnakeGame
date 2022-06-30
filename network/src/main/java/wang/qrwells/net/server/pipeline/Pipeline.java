@@ -24,8 +24,7 @@ public class Pipeline extends NioEventLoop {
   }
 
   public void read(Object msg) throws Throwable {
-    ((ChannelReadHandler) headNode.getHandler()).read(
-        creatMessageHandlerContext(), msg);
+    ((ChannelReadHandler) headNode.getHandler()).read(creatMessageHandlerContext(), msg);
   }
 
   public void active() {
@@ -50,8 +49,7 @@ public class Pipeline extends NioEventLoop {
 
   public void write(Object msg) {
     try {
-      ((ChannelWriteHandler) headNode.getHandler()).write(
-          creatMessageHandlerContext(), msg);
+      ((ChannelWriteHandler) headNode.getHandler()).write(creatMessageHandlerContext(), msg);
     } catch (Throwable throwable) {
       catchException(throwable);
     }
@@ -68,7 +66,8 @@ public class Pipeline extends NioEventLoop {
     }
     HandlerNode it = this.headNode;
     while (it.getHandler() != channelHandler) {
-      if (it == tailNode) return;
+      if (it == tailNode)
+        return;
       it = it.next();
     }
     it.pre().setNext(it.next());

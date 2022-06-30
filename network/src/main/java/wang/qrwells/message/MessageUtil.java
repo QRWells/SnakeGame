@@ -19,8 +19,8 @@ public class MessageUtil {
     int type = buffer.getInt();
     return switch (type) {
       case MessageType.RESPONSE -> parseResponseMessage(buffer);
-      case MessageType.REGISTER -> parseRegisterMessage(buffer);
-      case MessageType.LOGIN -> parseLoginMessage(buffer);
+      case MessageType.REGISTER -> parseAccountMessage(buffer, false);
+      case MessageType.LOGIN -> parseAccountMessage(buffer, true);
       case MessageType.LOGOUT -> parseLogoutMessage(buffer);
       case MessageType.GAME_SNAKE -> parseSnakeGameMessage(buffer);
       case MessageType.CHAT -> parseChatMessage(buffer);
@@ -34,14 +34,11 @@ public class MessageUtil {
     };
   }
 
-  private static SnakeGameListMessage parseSnakeGameListMessage(
-      ByteBuffer buffer) {
+  private static SnakeGameListMessage parseSnakeGameListMessage(ByteBuffer buffer) {
     int size = buffer.getInt();
     var list = new ArrayList<SnakeGameListMessage.GameInfo>();
     for (int i = 0; i < size; i++) {
-      list.add(
-          new SnakeGameListMessage.GameInfo(buffer.getInt(), buffer.getInt(),
-                                            buffer.getInt()));
+      list.add(new SnakeGameListMessage.GameInfo(buffer.getInt(), buffer.getInt(), buffer.getInt()));
     }
     return new SnakeGameListMessage(list);
   }
@@ -70,9 +67,7 @@ public class MessageUtil {
     buffer.get(fileName);
     buffer.get(fileData);
 
-    return new FileMessage(senderId, receiverId,
-                           new String(fileName, StandardCharsets.UTF_8),
-                           fileData);
+    return new FileMessage(senderId, receiverId, new String(fileName, StandardCharsets.UTF_8), fileData);
   }
 
   private static TimestampMessage parseTimeMessage(ByteBuffer buffer) {
@@ -88,8 +83,7 @@ public class MessageUtil {
     } else {
       byte[] message = new byte[messageSize];
       buffer.get(message);
-      return new ResponseMessage(status,
-                                 new String(message, StandardCharsets.UTF_8));
+      return new ResponseMessage(status, new String(message, StandardCharsets.UTF_8));
     }
   }
 
@@ -108,30 +102,19 @@ public class MessageUtil {
     var msgLen = buffer.getInt();
     var msg = new byte[msgLen];
     buffer.get(msg, 0, msgLen);
-    return new ChatMessage(senderId, receiverId, isGroup,
-                           new String(msg, StandardCharsets.UTF_8));
+    return new ChatMessage(senderId, receiverId, isGroup, new String(msg, StandardCharsets.UTF_8));
   }
 
-  public static RegisterMessage parseRegisterMessage(ByteBuffer buffer) {
+  public static AbstractMessage parseAccountMessage(ByteBuffer buffer, boolean isLogin) {
     var nameLen = buffer.getInt();
     var pwdLen = buffer.getInt();
     var name = new byte[nameLen];
     var pwd = new byte[pwdLen];
     buffer.get(name, 0, nameLen);
     buffer.get(pwd, 0, pwdLen);
-    return new RegisterMessage(new String(name, StandardCharsets.UTF_8),
-                               new String(pwd, StandardCharsets.UTF_8));
-  }
-
-  public static LoginMessage parseLoginMessage(ByteBuffer buffer) {
-    var nameLen = buffer.getInt();
-    var pwdLen = buffer.getInt();
-    var name = new byte[nameLen];
-    var pwd = new byte[pwdLen];
-    buffer.get(name, 0, nameLen);
-    buffer.get(pwd, 0, pwdLen);
-    return new LoginMessage(new String(name, StandardCharsets.UTF_8),
-                            new String(pwd, StandardCharsets.UTF_8));
+    return isLogin ? new LoginMessage(new String(name, StandardCharsets.UTF_8),
+                                      new String(pwd, StandardCharsets.UTF_8)) : new RegisterMessage(
+        new String(name, StandardCharsets.UTF_8), new String(pwd, StandardCharsets.UTF_8));
   }
 
   public static LogoutMessage parseLogoutMessage(ByteBuffer buffer) {
@@ -144,13 +127,9 @@ public class MessageUtil {
     var sessionId = buffer.getInt();
     var playerId = buffer.getInt();
     var action = SnakeGameMessage.Action.fromOrdinal(buffer.getInt());
-    if (action == SnakeGameMessage.Action.EAT)
-      return new SnakeGameMessage(time, sessionId, playerId, action,
-                                  SnakeGameMessage.Direction.NONE,
-                                  buffer.getShort(), buffer.getShort());
-
-    return new SnakeGameMessage(time, sessionId, playerId, action,
-                                SnakeGameMessage.Direction.fromOrdinal(
-                                    buffer.getInt()), 0, 0);
+    var direction = SnakeGameMessage.Direction.fromOrdinal(buffer.getInt());
+    var x = buffer.getInt();
+    var y = buffer.getInt();
+    return new SnakeGameMessage(time, sessionId, playerId, action, direction, x, y);
   }
 }

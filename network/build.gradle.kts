@@ -21,6 +21,7 @@ dependencies {
   implementation("org.xerial:sqlite-jdbc:3.36.0.3")
   implementation("ch.qos.logback:logback-classic:1.2.11")
   implementation("org.slf4j:slf4j-api:1.7.36")
+  implementation("commons-logging:commons-logging:1.2")
   implementation("org.springframework.security:spring-security-crypto:+")
 }
 

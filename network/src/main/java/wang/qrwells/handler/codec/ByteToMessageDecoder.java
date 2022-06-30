@@ -1,6 +1,5 @@
 package wang.qrwells.handler.codec;
 
-
 import org.slf4j.Logger;
 import wang.qrwells.message.MessageUtil;
 import wang.qrwells.net.server.bytemsg.msg.impl.FixedPoolByteMsg;
@@ -11,6 +10,7 @@ import java.nio.ByteBuffer;
 
 public class ByteToMessageDecoder implements ChannelReadHandler {
   private final Logger logger = org.slf4j.LoggerFactory.getLogger(getClass());
+
   @Override
   public void read(MessageHandlerContext mhc, Object msg) throws Throwable {
     FixedPoolByteMsg fixedPoolByteMsg = (FixedPoolByteMsg) msg;

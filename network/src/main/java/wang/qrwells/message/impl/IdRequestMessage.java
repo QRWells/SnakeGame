@@ -1,6 +1,5 @@
 package wang.qrwells.message.impl;
 
-
 import wang.qrwells.message.AbstractMessage;
 import wang.qrwells.message.MessageType;
 

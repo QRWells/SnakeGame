@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.pipeline;
 
-
 import wang.qrwells.net.server.handler.ChannelHandler;
 import wang.qrwells.net.server.handler.ChannelReadHandler;
 import wang.qrwells.net.server.handler.ChannelWriteHandler;
@@ -50,7 +49,6 @@ public class HeadNode extends HandlerNode {
     return true;
   }
 
-  private static class HeadNodeHandler implements ChannelReadHandler,
-      ChannelWriteHandler {
+  private static class HeadNodeHandler implements ChannelReadHandler, ChannelWriteHandler {
   }
 }

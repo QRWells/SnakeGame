@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.bytemsg.msg.impl;
 
-
 import wang.qrwells.net.server.bytemsg.allocator.ByteMsgAllocator;
 import wang.qrwells.net.server.bytemsg.msg.AbstractByteMsg;
 import wang.qrwells.net.server.bytemsg.msg.ByteMsg;
@@ -18,8 +17,7 @@ public class FixedPoolByteMsg extends AbstractByteMsg {
   private final int offset;
   private final AtomicBoolean isRelease;
 
-  public FixedPoolByteMsg(ByteBuffer interByteBuff,
-                          ByteMsgAllocator allocator) {
+  public FixedPoolByteMsg(ByteBuffer interByteBuff, ByteMsgAllocator allocator) {
     super(interByteBuff);
     this.internByteBuff = interByteBuff;
     this.allocator = allocator;
@@ -27,8 +25,7 @@ public class FixedPoolByteMsg extends AbstractByteMsg {
     this.offset = -1;
   }
 
-  public FixedPoolByteMsg(ByteBuffer interByteBuff, ByteMsgAllocator allocator,
-                          int offset) {
+  public FixedPoolByteMsg(ByteBuffer interByteBuff, ByteMsgAllocator allocator, int offset) {
     super(interByteBuff);
     this.internByteBuff = interByteBuff;
     this.allocator = allocator;
@@ -115,11 +112,7 @@ public class FixedPoolByteMsg extends AbstractByteMsg {
     int byteReadSize = Math.min(readSize, expectLength);
     int old = internByteBuff.position();
     int limit = internByteBuff.limit();
-    internByteBuff.flip()
-                  .position(readIndex)
-                  .get(src, offset, byteReadSize)
-                  .limit(limit)
-                  .position(old);
+    internByteBuff.flip().position(readIndex).get(src, offset, byteReadSize).limit(limit).position(old);
     readIndex += byteReadSize;
     return byteReadSize;
   }

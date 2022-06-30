@@ -25,8 +25,7 @@ public class LoginMessage extends AbstractMessage {
 
   @Override
   public int getLength() {
-    return HEADER_LENGTH + Integer.BYTES * 2 + username.getBytes(
-        StandardCharsets.UTF_8).length + password.getBytes(
+    return HEADER_LENGTH + Integer.BYTES * 2 + username.getBytes(StandardCharsets.UTF_8).length + password.getBytes(
         StandardCharsets.UTF_8).length;
   }
 
@@ -39,10 +38,8 @@ public class LoginMessage extends AbstractMessage {
   public byte[] getBytes() {
     var result = ByteBuffer.allocate(getLength());
     writeHeader(result);
-    result.putInt(username.length())
-          .putInt(password.length())
-          .put(username.getBytes(StandardCharsets.UTF_8))
-          .put(password.getBytes(StandardCharsets.UTF_8));
+    result.putInt(username.length()).putInt(password.length()).put(username.getBytes(StandardCharsets.UTF_8)).put(
+        password.getBytes(StandardCharsets.UTF_8));
     return result.array();
   }
 }

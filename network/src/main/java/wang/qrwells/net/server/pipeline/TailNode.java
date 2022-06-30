@@ -16,8 +16,8 @@ import java.util.ArrayDeque;
 public class TailNode extends HandlerNode {
 
   private final ArrayDeque<ByteMsg> unflushMsg;
-  private int unflush;
   private final int maxSpin;
+  private int unflush;
 
   public TailNode(Pipeline pipeline) {
     super(pipeline, new TailNodeHandler());
@@ -77,8 +77,10 @@ public class TailNode extends HandlerNode {
       while (spin < maxSpin) {
         int i = wait.writeToChannel(channel);
         hasWrite += i;
-        if (hasWrite == wait.size()) break;
-        if (i == 0) spin++;
+        if (hasWrite == wait.size())
+          break;
+        if (i == 0)
+          spin++;
       }
       unflush -= hasWrite;
       //write out all
@@ -93,8 +95,7 @@ public class TailNode extends HandlerNode {
     }
   }
 
-  private static class TailNodeHandler implements ChannelReadHandler,
-      ChannelWriteHandler {
+  private static class TailNodeHandler implements ChannelReadHandler, ChannelWriteHandler {
 
     private TailNode tailNode;
 
@@ -110,8 +111,7 @@ public class TailNode extends HandlerNode {
     @Override
     public void write(MessageHandlerContext mhc, Object msg) {
       if (!(msg instanceof ByteMsg)) {
-        throw new IllegalArgumentException(
-            "Data is not cast to subclass of " + "ByteMsg");
+        throw new IllegalArgumentException("Data is not cast to subclass of " + "ByteMsg");
       }
       tailNode.unflushMsg.offer((ByteMsg) msg);
       tailNode.unflush += ((ByteMsg) msg).size();

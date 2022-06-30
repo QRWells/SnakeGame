@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.channel;
 
-
 import wang.qrwells.net.server.bytemsg.allocator.ByteMsgAllocator;
 import wang.qrwells.net.server.bytemsg.msg.ByteMsg;
 
@@ -12,8 +11,7 @@ import java.nio.channels.SocketChannel;
 public class NioByteChannel extends Channel {
   private final int interOp;
 
-  public NioByteChannel(Channel parentChannel, NioEventLoop nioEventLoop,
-                        SelectableChannel javaChannel, int interOp)
+  public NioByteChannel(Channel parentChannel, NioEventLoop nioEventLoop, SelectableChannel javaChannel, int interOp)
       throws IOException {
     super(parentChannel, nioEventLoop, javaChannel);
     this.interOp = interOp;

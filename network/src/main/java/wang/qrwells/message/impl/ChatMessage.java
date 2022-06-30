@@ -1,6 +1,5 @@
 package wang.qrwells.message.impl;
 
-
 import wang.qrwells.message.AbstractMessage;
 import wang.qrwells.message.MessageType;
 
@@ -20,8 +19,7 @@ public class ChatMessage extends AbstractMessage {
   private final int senderId;
   private final int receiverId;
 
-  public ChatMessage(int senderId, int targetId, boolean isGroup,
-                     String message) {
+  public ChatMessage(int senderId, int targetId, boolean isGroup, String message) {
     this.message = message;
     this.isGroup = isGroup;
     this.senderId = senderId;
@@ -46,9 +44,7 @@ public class ChatMessage extends AbstractMessage {
 
   @Override
   public int getLength() {
-    return HEADER_LENGTH + Integer.BYTES * 2 +
-           (message != null ? message.getBytes(StandardCharsets.UTF_8).length :
-               0);
+    return HEADER_LENGTH + Integer.BYTES * 3 + (message != null ? message.getBytes(StandardCharsets.UTF_8).length : 0);
   }
 
   @Override
@@ -58,10 +54,10 @@ public class ChatMessage extends AbstractMessage {
 
   @Override
   public byte[] getBytes() {
+    var bytes = message.getBytes(StandardCharsets.UTF_8);
     var result = ByteBuffer.allocate(getLength());
     writeHeader(result);
-    result.putInt(senderId)
-          .putInt(receiverId | (isGroup ? (1 << 31) : 0));
+    result.putInt(senderId).putInt(receiverId | (isGroup ? (1 << 31) : 0)).putInt(bytes.length).put(bytes);
     return result.array();
   }
 }

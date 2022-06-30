@@ -43,18 +43,14 @@ public class TCPClient extends Client {
       socket = new Socket(host, port);
       log.info("Created socket to " + host + ":" + port);
     } catch (Exception e) {
-      throw new RuntimeException(
-          "Failed to create a socket to address " + host + " : " + port +
-          " Error: " + e, e);
+      throw new RuntimeException("Failed to create a socket to address " + host + " : " + port + " Error: " + e, e);
     }
     try {
       openTCPConnection(socket);
       connected = true;
     } catch (Exception e) {
       disconnect();
-      throw new RuntimeException(
-          "Failed to open TCP connection to " + host + ":" + port + " Error: " +
-          e, e);
+      throw new RuntimeException("Failed to open TCP connection to " + host + ":" + port + " Error: " + e, e);
     }
   }
 

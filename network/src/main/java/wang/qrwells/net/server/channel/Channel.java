@@ -1,6 +1,5 @@
 package wang.qrwells.net.server.channel;
 
-
 import wang.qrwells.net.server.bytemsg.msg.ByteMsg;
 import wang.qrwells.net.server.pipeline.Pipeline;
 
@@ -14,8 +13,7 @@ public abstract class Channel {
   protected SelectableChannel javaChannel;
   protected volatile boolean close;
 
-  public Channel(Channel parentChannel, NioEventLoop nioEventLoop,
-                 SelectableChannel javaChannel) throws IOException {
+  public Channel(Channel parentChannel, NioEventLoop nioEventLoop, SelectableChannel javaChannel) throws IOException {
     this.parentChannel = parentChannel;
     eventLoop = nioEventLoop;
     this.javaChannel = javaChannel;

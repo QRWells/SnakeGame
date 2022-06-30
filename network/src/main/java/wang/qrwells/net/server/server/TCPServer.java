@@ -16,8 +16,7 @@ public class TCPServer {
 
   private int port = 8888;
 
-  public TCPServer group(NioEventLoopGroup acceptorGroup,
-                         NioEventLoopGroup workerGroup) {
+  public TCPServer group(NioEventLoopGroup acceptorGroup, NioEventLoopGroup workerGroup) {
     this.acceptorGroup = acceptorGroup;
     this.workerGroup = workerGroup;
     return this;
@@ -40,9 +39,7 @@ public class TCPServer {
     var serverChannel = new NioServerChannel(acceptorGroup.getEventLoop());
     serverChannel.listen(port);
     serverChannel.register();
-    serverChannel.getPipeline()
-                 .addLast(new NioServerChannel.AcceptorHandler(workerGroup,
-                                                               serverChannel,
-                                                               channelInitHandler));
+    serverChannel.getPipeline().addLast(
+        new NioServerChannel.AcceptorHandler(workerGroup, serverChannel, channelInitHandler));
   }
 }

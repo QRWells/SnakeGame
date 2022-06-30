@@ -10,21 +10,17 @@ import java.nio.ByteBuffer;
 
 //线程私有
 public class ThreadPoolByteMsgAllocator implements PoolByteMsgAllocator {
-  public static final ThreadPoolByteMsgAllocator DEFAULT_INSTANT =
-      new ThreadPoolByteMsgAllocator(SharedByteMsgAllocator.DEFAULT_INSTANT,
-                                     4 * 1024, 128);
+  public static final ThreadPoolByteMsgAllocator DEFAULT_INSTANT = new ThreadPoolByteMsgAllocator(
+      SharedByteMsgAllocator.DEFAULT_INSTANT, 4 * 1024, 128);
   private final SharedByteMsgAllocator parent;
   private final int poolSize;
   private final int chunkSize;
   private final ByteBuffer rawBuffer;
   private final int[] longest;
   private final int chunkNum;
-  private ByteBuffer rawSpan;
   private boolean isInit;
 
-  public ThreadPoolByteMsgAllocator(
-      SharedByteMsgAllocator sharedByteMsgAllocator, int poolSize,
-      int chunkSize) {
+  public ThreadPoolByteMsgAllocator(SharedByteMsgAllocator sharedByteMsgAllocator, int poolSize, int chunkSize) {
     parent = sharedByteMsgAllocator;
     int i = poolSize / (4 * 1024);
     //4K 对齐
@@ -78,8 +74,7 @@ public class ThreadPoolByteMsgAllocator implements PoolByteMsgAllocator {
     }
     var chunks = size / chunkSize;
     // chunks need to be allocated
-    chunks = size % chunkSize == 0 ? AllocatorUtil.roundUp(chunks) :
-        AllocatorUtil.roundUp(chunks + 1);
+    chunks = size % chunkSize == 0 ? AllocatorUtil.roundUp(chunks) : AllocatorUtil.roundUp(chunks + 1);
     if (longest[0] < chunks) {
       var poll = parent.allocate(chunks);
       poll.hold();
@@ -111,14 +106,10 @@ public class ThreadPoolByteMsgAllocator implements PoolByteMsgAllocator {
 
       while (index != 0) {
         index = AllocatorUtil.parent(index);
-        longest[index] = Math.max(longest[AllocatorUtil.leftLeaf(index)],
-                                  longest[AllocatorUtil.rightLeaf(index)]);
+        longest[index] = Math.max(longest[AllocatorUtil.leftLeaf(index)], longest[AllocatorUtil.rightLeaf(index)]);
       }
 
-      var byteMsg = rawBuffer.limit(poolSize)
-                             .position(offset * chunkSize)
-                             .limit((offset + chunks) * chunkSize)
-                             .slice();
+      var byteMsg = rawBuffer.limit(poolSize).position(offset * chunkSize).limit((offset + chunks) * chunkSize).slice();
       var poll = new FixedPoolByteMsg(byteMsg, this, offset);
       poll.hold();
       return poll;

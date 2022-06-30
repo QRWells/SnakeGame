@@ -7,14 +7,14 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 public class SnakeGameListMessage extends AbstractMessage {
-  public List<GameInfo> getGameInfos() {
-    return gameInfos;
-  }
-
   private final List<GameInfo> gameInfos;
 
   public SnakeGameListMessage(List<GameInfo> gameInfos) {
     this.gameInfos = gameInfos;
+  }
+
+  public List<GameInfo> getGameInfos() {
+    return gameInfos;
   }
 
   @Override
@@ -40,7 +40,7 @@ public class SnakeGameListMessage extends AbstractMessage {
     return buffer.array();
   }
 
-  public record GameInfo(int id, int maxPlayers, int currentPlayers) {
+  public record GameInfo(int id, int currentPlayers, int maxPlayers) {
     static final int SIZE = Integer.BYTES * 3;
   }
 }
