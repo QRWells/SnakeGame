@@ -11,11 +11,10 @@
 - 1W202060 大西真基久(mkhs-o@akane.waseda.jp)
 
 ## 開発環境
-- OpenJDK 17.0.1
+- OpenJDK 18.0
 - Gradle 7.4
 - Kotlin 1.6.10
 - Compose for desktop 1.1.1
-- FXGL 17.1
 
 ## 開発手順
 - 自分のアカウントにforkまたはこのレポで自分のブランチで開発
