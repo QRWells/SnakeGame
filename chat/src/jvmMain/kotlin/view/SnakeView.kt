@@ -30,6 +30,9 @@ import viewModel.SnakeViewModel
 import wang.qrwells.message.impl.SnakeGameListMessage
 import wang.qrwells.message.impl.SnakeGameMessage
 
+/**
+ * 四角を表す
+ */
 @Composable
 fun GameObjectTile(
   gameObject: GameObject,
@@ -42,6 +45,9 @@ fun GameObjectTile(
       .background(gameObject.color)
   )
 
+/**
+ * 四角を表す
+ */
 @Composable
 fun GameObjectTileRound(
   gameObject: GameObject,
@@ -55,18 +61,23 @@ fun GameObjectTileRound(
       .background(gameObject.color).clip(RoundedCornerShape(roundCorner))
   )
 
+/**
+ * スネークゲームの画面
+ */
 @Composable
 fun SnakeView(snakeViewModel: SnakeViewModel) {
   val snakeGame = remember { SnakeGame() }
-  val refreshTimeNanos = 1_000_000_000 / snakeGame.speed
-  var lastUpdate by mutableStateOf(0L)
-  val density = LocalDensity.current
-  var tileSize by mutableStateOf(Pair(20.dp, 20.dp))
-  val logger = LoggerFactory.getLogger("SnakeView")
+  val refreshTimeNanos = 1_000_000_000 / snakeGame.speed // 何ナノ秒ごとに更新するか
+  var lastUpdate by mutableStateOf(0L)  // 最後に更新した時間
+  val density = LocalDensity.current // ディスプレイの解像度
+  var tileSize by mutableStateOf(Pair(20.dp, 20.dp)) // タイルの大きさ
+  val logger = LoggerFactory.getLogger("SnakeView") // ロガー
 
+  // 起動する時に一回だけ呼ばれる
   LaunchedEffect(Unit) {
-    snakeGame.id = AppContext.user.id
+    snakeGame.id = AppContext.user.id // 自分のIDを設定
 
+    // ゲームリストを取得するメッセージを処理
     Client.addHandler("gameList") { _, message ->
       if (message is SnakeGameListMessage) {
         snakeViewModel.gameList.clear()
@@ -82,32 +93,14 @@ fun SnakeView(snakeViewModel: SnakeViewModel) {
       }
     }
 
-//    Client.addHandler("joinGameHandler") { _, message ->
-//      if (message is SnakeGameMessage && message.action == SnakeGameMessage.Action.JOIN) {
-//        if (message.playerId == snakeGame.id) {
-//          snakeGame.self = Snake(message.x, message.y, Color.Green)
-//          snakeGame.self.direction = message.direction
-//        } else {
-//          snakeGame.other[message.playerId] = Snake(message.x, message.y, Color.Yellow)
-//          snakeGame.other[message.playerId]?.direction = message.direction
-//        }
-//      }
-//    }
-
-//    Client.addHandler("startGameHandler") { _, message ->
-//      if (message is SnakeGameMessage && message.action == SnakeGameMessage.Action.NEW) {
-//        snakeGame.food.x = message.x
-//        snakeGame.food.y = message.y
-//        snakeGame.start()
-//      }
-//    }
-
+    // ゲームメッセージをゲームに処理させる
     Client.addHandler("gameHandler") { _, message ->
       if (message is SnakeGameMessage) {
         snakeGame.handleMessage(message)
       }
     }
 
+    // ゲームを更新する
     while (true) {
       withFrameNanos {
         if ((it - lastUpdate) > refreshTimeNanos) {
@@ -119,6 +112,9 @@ fun SnakeView(snakeViewModel: SnakeViewModel) {
   }
 
   Row(modifier = Modifier.fillMaxSize()) {
+    /**
+     * ゲーム情報を表示する
+     */
     Column(modifier = Modifier.weight(3f)) {
       val size = remember { mutableStateOf("") }
       val inputEnable = remember { mutableStateOf(true) }
@@ -129,6 +125,7 @@ fun SnakeView(snakeViewModel: SnakeViewModel) {
               snakeViewModel.joinGame(info.sessionId)
               snakeGame.sessionId = info.sessionId
               inputEnable.value = false
+              // Windowからキー入力の情報を処理
               AppContext.keyEventHandlers.add {
                 snakeGame.registerKeyEvent(it)
               }
@@ -187,6 +184,10 @@ fun SnakeView(snakeViewModel: SnakeViewModel) {
         }
       }
     }
+
+    /**
+     * ゲーム画面を表示する
+     */
     Column(
       modifier = Modifier.weight(7f),
       horizontalAlignment = Alignment.CenterHorizontally,
@@ -200,9 +201,6 @@ fun SnakeView(snakeViewModel: SnakeViewModel) {
               it.height.toDp() / SnakeGame.areaSize
             )
           }
-        }.onPreviewKeyEvent {
-          logger.info("key event: ${it.key.keyCode}")
-          snakeGame.registerKeyEvent(it)
         }
       ) {
         snakeGame.gameObjects.forEach {

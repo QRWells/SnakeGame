@@ -46,7 +46,7 @@ fun App(onKey: () -> Unit, onTitleChange: (String) -> Unit) {
         Client.clearHandler()
       })
     } else {
-      onTitleChange(AppContext.user.name)
+      onTitleChange("${AppContext.user.name} (${AppContext.user.id})")
       MainScreen(mainScreenViewModel)
     }
   }
